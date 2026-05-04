@@ -397,11 +397,24 @@
   <a href="albums.html" class="albums-cta">
     <div class="albums-cta-left">
       <div class="albums-cta-title">历年专辑</div>
-      <div class="albums-cta-sub">1994 – 2026 · 220 张专辑</div>
+      <div class="albums-cta-sub" id="album-count-display">1994 – 2026 · 221 张专辑</div>
     </div>
     <div class="albums-cta-arrow">→</div>
   </a>
 </section>
+
+<script>
+fetch('albums.json')
+  .then(r => r.json())
+  .then(data => {
+    var latest = data[data.length - 1];
+    var earliest = data[0];
+    var count = data.length;
+    document.getElementById('album-count-display').textContent =
+      earliest.year + ' – ' + latest.year + ' · ' + count + ' 张专辑';
+  })
+  .catch(function() {});
+</script>
 
 <footer>
   <p>窦唯非官方展示站 · 资料整理自公开来源</p>
