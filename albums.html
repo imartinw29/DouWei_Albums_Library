@@ -63,11 +63,22 @@
    gap: 2rem;
  }
 
- .logo {
-   display: flex;
-   flex-direction: column;
-   gap: 0.18rem;
- }
+.logo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+}
+
+.logo-home {
+  display: inline-block;
+  font-size: 1.1rem;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: color 0.15s ease;
+  margin-bottom: 0.15rem;
+}
+
+.logo-home:hover { color: var(--accent-light); }
 
  .logo-name {
    font-size: 1.78rem;
@@ -130,17 +141,17 @@
    padding-right: 3rem;
  }
 
- /* ── Hero ── */
- .hero-shell {
-   padding-top: 3.2rem;
-   padding-bottom: 1rem;
- }
+/* ── Hero ── */
+.hero-shell {
+  padding-top: 2rem;
+  padding-bottom: 0.75rem;
+}
 
- .hero {
-   position: relative;
-   padding: 2.4rem 0 2rem;
-   border-bottom: 1px solid var(--border);
- }
+.hero {
+  position: relative;
+  padding: 1.6rem 0 1.2rem;
+  border-bottom: 1px solid var(--border);
+}
 
  .hero::before {
    content: '';
@@ -175,15 +186,37 @@
    letter-spacing: 0.06em;
  }
 
- /* ── Stats Bar ── */
- .stats-bar {
-   padding-top: 0.85rem;
-   padding-bottom: 0.85rem;
-   display: flex;
-   align-items: center;
-   gap: 0;
-   border-bottom: 1px solid var(--border);
- }
+/* ── Index Bar (merged sticky container) ── */
+.index-bar {
+  position: sticky;
+  top: 68px;
+  z-index: 70;
+  border-bottom: 1px solid var(--border);
+  background: rgba(9,9,9,0.80);
+  backdrop-filter: blur(16px);
+}
+
+.index-bar .stats-bar {
+  border-bottom: none;
+}
+
+.index-bar .filter-bar {
+  position: static;
+  top: auto;
+  border-bottom: none;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+/* ── Stats Bar ── */
+.stats-bar {
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+}
 
  .stats-item {
    display: inline-flex;
@@ -208,21 +241,17 @@
    margin: 0 0.9rem;
  }
 
- /* ── Filter Bar ── */
- .filter-bar {
-   position: sticky;
-   top: 68px;
-   z-index: 70;
-   display: flex;
-   align-items: center;
-   gap: 0.75rem;
-   min-height: 64px;
-   padding-top: 0.9rem;
-   padding-bottom: 0.9rem;
-   border-bottom: 1px solid var(--border);
-   background: rgba(9,9,9,0.75);
-   backdrop-filter: blur(16px);
- }
+/* ── Filter Bar ── */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 56px;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: none;
+  background: transparent;
+}
 
  .filter-label {
    flex-shrink: 0;
@@ -652,7 +681,7 @@
    .modal-body { height: auto; max-height: none; padding: 1.2rem; overflow: visible; }
    .modal-desc { overflow-y: visible; }
    .nav-tab { padding: 0.4rem 0.85rem; font-size: 0.75rem; }
-   .filter-bar { top: 68px; }
+   .filter-bar { top: auto; }
  }
 
  @media (max-width: 600px) {
@@ -667,6 +696,7 @@
 <header>
   <div class="header-inner">
     <div class="logo">
+      <a href="index.html" class="logo-home" aria-label="返回首页">←</a>
       <span class="logo-name">窦唯</span>
       <span class="logo-sub">专辑档案 · 1994—2026</span>
     </div>
@@ -685,19 +715,20 @@
   </div>
 </div>
 
-<div class="stats-bar" id="stats-bar">
-  <span class="stats-item"><span class="stats-label">时间跨度</span><span class="stats-value">1994—2026</span></span>
-  <span class="stats-divider">·</span>
-  <span class="stats-item"><span class="stats-label">收录作品</span><span class="stats-value">221 张</span></span>
-  <span class="stats-divider">·</span>
-  <span class="stats-item"><span class="stats-label">编排方式</span><span class="stats-value">年份 / 组合双索引</span></span>
-  <span class="stats-divider">·</span>
-  <span class="stats-item"><span class="stats-label">介质类型</span><span class="stats-value">5 种</span></span>
-</div>
-
-<div class="filter-bar" id="filter-bar">
-  <span class="filter-label">Index</span>
-  <div class="filter-tags"></div>
+<div class="index-bar" id="index-bar">
+  <div class="stats-bar" id="stats-bar">
+    <span class="stats-item"><span class="stats-label">时间跨度</span><span class="stats-value">1994—2026</span></span>
+    <span class="stats-divider">·</span>
+    <span class="stats-item"><span class="stats-label">收录作品</span><span class="stats-value">221 张</span></span>
+    <span class="stats-divider">·</span>
+    <span class="stats-item"><span class="stats-label">编排方式</span><span class="stats-value">年份 / 组合双索引</span></span>
+    <span class="stats-divider">·</span>
+    <span class="stats-item"><span class="stats-label">介质类型</span><span class="stats-value">5 种</span></span>
+  </div>
+  <div class="filter-bar" id="filter-bar">
+    <span class="filter-label">Index</span>
+    <div class="filter-tags"></div>
+  </div>
 </div>
 
 <div class="main">
