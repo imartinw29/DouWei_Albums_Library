@@ -108,6 +108,9 @@
   }
 
   .filter-bar {
+    position: sticky;
+    top: 64px;
+    z-index: 50;
     max-width: 1440px;
     margin: 0 auto;
     padding: 1.2rem 3rem;
@@ -115,7 +118,28 @@
     gap: 0.5rem;
     flex-wrap: wrap;
     border-bottom: 1px solid var(--border);
+    background: var(--bg);
   }
+
+  .stats-bar {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0.6rem 3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stats-years {
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stats-divider { color: var(--border); }
 
   .filter-tag {
     padding: 0.28rem 0.85rem;
@@ -213,7 +237,7 @@
     transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   }
 
-  .album-card:hover .cover-wrap { transform: translateY(-3px); }
+  .album-card:hover .cover-wrap { transform: translateY(-3px); box-shadow: 0 4px 20px rgba(184,149,106,0.15); }
 
   .cover-wrap img {
     width: 100%;
@@ -365,6 +389,7 @@
     flex-direction: column;
     padding: 0 10px;
     overflow: hidden;
+    position: relative;
   }
 
   .modal-name {
@@ -441,7 +466,7 @@
   .view-panel.active { display: block; }
 
   @media (max-width: 900px) {
-    header, .filter-bar, .main { padding-left: 1.2rem; padding-right: 1.2rem; }
+    header, .filter-bar, .stats-bar, .main { padding-left: 1.2rem; padding-right: 1.2rem; }
     .modal {
       grid-template-columns: 1fr;
       height: auto;
@@ -479,6 +504,12 @@
 
 <div class="filter-bar" id="filter-bar"></div>
 
+<div class="stats-bar">
+  <span class="stats-years">1994 – 2026</span>
+  <span class="stats-divider">·</span>
+  <span class="stats-count">220 张专辑</span>
+</div>
+
 <div class="main">
   <div class="view-panel active" id="panel-year"></div>
   <div class="view-panel" id="panel-group"></div>
@@ -489,12 +520,12 @@
   <div class="modal">
     <div class="modal-cover" id="modal-cover"></div>
     <div class="modal-body">
+      <button class="modal-close" id="modal-close">✕</button>
       <div class="modal-name" id="modal-name"></div>
       <div class="modal-meta" id="modal-meta"></div>
       <div class="modal-desc" id="modal-desc"></div>
     </div>
   </div>
-  <button class="modal-close" id="modal-close">✕</button>
 </div>
 
 <script>
@@ -548,7 +579,7 @@ function groupOf(a) {
 
 function coverHTML(album) {
   if (album.cover) {
-    return `<img src="covers/${album.cover}" alt="${album.name}"
+    return `<img src="covers/${album.cover}" alt="${album.name}" loading="lazy" decoding="async"
              onerror="this.parentElement.innerHTML=placeholderHTML(${album.year||0},'${album.name}');">`;
   }
   return placeholderHTML(album.year || 0, album.name);
