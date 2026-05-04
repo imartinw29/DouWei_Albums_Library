@@ -376,14 +376,30 @@
   }
 
   .modal-meta {
-    font-size: 0.78rem;
-    color: var(--text-dim);
     display: flex;
-    gap: 0.8rem;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 0.4rem;
     padding-bottom: 0.8rem;
     border-bottom: 1px solid var(--border);
     margin-bottom: 0.5rem;
+  }
+
+  .modal-row {
+    display: flex;
+    gap: 0.8rem;
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+
+  .modal-row-label {
+    color: var(--text-dim);
+    min-width: 4em;
+    flex-shrink: 0;
+  }
+
+  .modal-row-value {
+    color: var(--text-mid);
+    word-break: break-all;
   }
 
   .modal-desc {
@@ -682,11 +698,20 @@ function openModal(album) {
   }
 
   document.getElementById('modal-name').textContent = album.name;
-  document.getElementById('modal-meta').innerHTML =
-    `<span>${album.year || '—'}</span>` +
-    (album.date ? `<span>·</span><span>${album.date}</span>` : '') +
-    (album.album_artist ? `<span>·</span><span>${album.album_artist}</span>` : '') +
-    (album.medium ? `<span>·</span><span>${album.medium}</span>` : '');
+
+  const metaRows = [];
+  if (album.date) {
+    metaRows.push(`<div class="modal-row"><span class="modal-row-label">发行日期</span><span class="modal-row-value">${album.date}</span></div>`);
+  }
+  if (album.artist) {
+    metaRows.push(`<div class="modal-row"><span class="modal-row-label">演奏者</span><span class="modal-row-value">${album.artist}</span></div>`);
+  }
+  if (album.medium) {
+    const mediumMap = { D: '数字 (Digital)', CD: 'CD', DVD: 'DVD', LP: '黑胶', DLT: '数字录音带' };
+    const mediumLabel = mediumMap[album.medium] || album.medium;
+    metaRows.push(`<div class="modal-row"><span class="modal-row-label">发行介质</span><span class="modal-row-value">${mediumLabel}</span></div>`);
+  }
+  document.getElementById('modal-meta').innerHTML = metaRows.join('');
 
   const desc = (album.description || '').trim();
   document.getElementById('modal-desc').textContent = desc || '（暂无介绍）';
