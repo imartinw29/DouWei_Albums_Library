@@ -60,16 +60,16 @@
   }
 
   .logo-name {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: 400;
-    color: var(--accent);
-    letter-spacing: 0.25em;
+    color: var(--accent-light);
+    letter-spacing: 0.2em;
   }
 
   .logo-sub {
-    font-size: 0.68rem;
-    color: var(--text-dim);
-    letter-spacing: 0.15em;
+    font-size: 0.72rem;
+    color: var(--text-mid);
+    letter-spacing: 0.12em;
     margin-top: -2px;
   }
 
@@ -129,7 +129,7 @@
     align-items: center;
     gap: 0.6rem;
     font-size: 0.72rem;
-    color: var(--text-dim);
+    color: var(--text-mid);
     letter-spacing: 0.05em;
     border-bottom: 1px solid var(--border);
   }
@@ -141,6 +141,25 @@
 
   .stats-divider { color: var(--border); }
 
+  .bio-bar {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 1rem 3rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .bio-text {
+    font-size: 0.8rem;
+    color: var(--text-mid);
+    line-height: 1.9;
+    letter-spacing: 0.03em;
+  }
+
+  .bio-emphasis {
+    color: var(--accent);
+    font-style: normal;
+  }
+
   .filter-tag {
     padding: 0.28rem 0.85rem;
     border: 1px solid var(--border);
@@ -149,7 +168,7 @@
     letter-spacing: 0.04em;
     cursor: pointer;
     background: transparent;
-    color: var(--text-dim);
+    color: var(--text-mid);
     transition: all 0.15s;
     font-family: inherit;
     white-space: nowrap;
@@ -466,7 +485,7 @@
   .view-panel.active { display: block; }
 
   @media (max-width: 900px) {
-    header, .filter-bar, .stats-bar, .main { padding-left: 1.2rem; padding-right: 1.2rem; }
+    header, .filter-bar, .stats-bar, .bio-bar, .main { padding-left: 1.2rem; padding-right: 1.2rem; }
     .modal {
       grid-template-columns: 1fr;
       height: auto;
@@ -508,6 +527,10 @@
   <span class="stats-years">1994 – 2026</span>
   <span class="stats-divider">·</span>
   <span class="stats-count">220 张专辑</span>
+</div>
+
+<div class="bio-bar">
+  <p class="bio-text">窦唯（1969年10月14日—），又名暮良，北京人，中国大陆著名音乐家、歌手、作曲家、音乐制作人，中国摇滚乐代表人物之一，与魔岩唱片同侪张楚、何勇并称<span class="bio-emphasis">「魔岩三杰」</span>。1988年接替丁武担任黑豹乐队主唱，1991年发行中国第一张流行摇滚乐专辑《黑豹》，同年离开黑豹，先后组建做梦乐队（1991–1992）、译乐队（1999–）、暮良文王乐队（2002–）。2002年起与不一定乐队合作，后改组不一样乐队（2006–）。2020年起与朝简乐队合作至今。</p>
 </div>
 
 <div class="main">
