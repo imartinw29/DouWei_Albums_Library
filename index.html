@@ -540,7 +540,7 @@ function cardHTML(album) {
   const artists = (album.album_artist || album.artist || '').split(/[;；]/).map(a => a.trim());
   const dateStr = album.date || '';
   return `
-  <div class="album-card" onclick="openModal(albums.find(a=>a.name===${JSON.stringify(album.name)}))">
+  <div class="album-card" onclick='openModal({name:${JSON.stringify(album.name)},artist:${JSON.stringify(album.artist)},album_artist:${JSON.stringify(album.album_artist)},date:${JSON.stringify(album.date)},year:${album.year},medium:${JSON.stringify(album.medium)},description:${JSON.stringify(album.description||'')},cover:${JSON.stringify(album.cover)}})'>
     <div class="cover-wrap">
       ${coverHTML(album)}
     </div>
