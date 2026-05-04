@@ -286,22 +286,9 @@
  padding-bottom:7rem;
  }
 
- .view-panel { display: none; }
- .view-panel.active { display: block; }
-
  .year-section,
  .group-section {
  margin-bottom:4.35rem;
- opacity:0;
- transform: translateY(10px);
- animation: sectionReveal0.45s ease forwards;
- }
-
- @keyframes sectionReveal {
- to {
- opacity:1;
- transform: translateY(0);
- }
  }
 
  .year-header,
@@ -409,7 +396,7 @@
  .album-card:hover .cover-wrap {
  transform: translateY(-4px) scale(1.01);
  border-color: rgba(176,147,110,0.18);
- box-shadow:010px30px rgba(0,0,0,0.28),0001px rgba(177,140,99,0.05) inset;
+ box-shadow:010px30px rgba(0,0,0,0.28), inset0001px rgba(177,140,99,0.05);
  }
 
  .cover-wrap img {
@@ -606,7 +593,9 @@
  transition: transform0.36s cubic-bezier(0.23,1,0.32,1);
  }
 
- .modal-overlay.open .modal { transform: scale(1) translateY(0); }
+ .modal-overlay.open .modal {
+ transform: scale(1) translateY(0);
+ }
 
  .modal-cover {
  min-height:100%;
@@ -696,6 +685,12 @@
  line-height:1.7;
  }
 
+ .modal-submeta {
+ font-size:0.74rem;
+ color: var(--text-dim);
+ line-height:1.7;
+ }
+
  .modal-meta-sep {
  color: rgba(176,147,110,0.35);
  margin:00.45rem;
@@ -723,23 +718,20 @@
  font-weight:400;
  }
 
+ .view-panel { display: none; }
+ .view-panel.active { display: block; }
+
  @media (max-width:1040px) {
- :root { --filter-height: auto; }
  .modal {
  grid-template-columns:1fr;
  max-width:720px;
  max-height:92vh;
  overflow-y: auto;
  }
- .modal-cover {
- max-height:72vh;
- }
- .modal-body {
- min-height: auto;
- }
- .modal-desc {
- overflow-y: visible;
- }
+
+ .modal-cover { max-height:72vh; }
+ .modal-body { min-height: auto; }
+ .modal-desc { overflow-y: visible; }
  }
 
  @media (max-width:900px) {
@@ -758,9 +750,7 @@
  gap:1rem;
  }
 
- .hero-shell {
- padding-top:2.4rem;
- }
+ .hero-shell { padding-top:2.4rem; }
 
  .hero {
  padding:1.7rem02rem;
@@ -859,6 +849,7 @@
 </style>
 </head>
 <body>
+
 <header>
  <div class="header-inner">
  <div class="logo">
@@ -903,7 +894,7 @@
  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-name">
  <div class="modal-cover" id="modal-cover"></div>
  <div class="modal-body">
- <button class="modal-close" id="modal-close" type="button" aria-label="关闭">✕</button>
+ <button class="modal-close" id="modal-close">✕</button>
  <div class="modal-kicker">Album Note</div>
  <div class="modal-name" id="modal-name"></div>
  <div class="modal-meta" id="modal-meta"></div>
@@ -912,370 +903,6 @@
  </div>
 </div>
 
-<script>
-let albums = [];
-let currentView = 'year';
-
-const ERAS = {
-1994:'黑梦',1995:'黑梦',1996:'黑梦',1997:'黑梦',1998:'黑梦',1999:'黑梦',
-2000:'影视 OST',2001:'影视 OST',
-2002:'暮良文王',2003:'暮良文王',
-2004:'暮良文王 · 不一定',
-2005:'暮良文王 · 不一定',2006:'不一定 · 不一样',
-2007:'不一定 · 不一样',2008:'不一定 · 不一样',
-2009:'不一定',
-2010:'不一样',2011:'不一定',2012:'不一样',
-2013:'不一定',2014:'不一样 · 天宫图',
-2015:'不一样 · 天真君公',
-2016:'不一样',2017:'不一样',2018:'不一定',
-2019:'不一定 · 朝简',
-2020:'不一定 · 朝简',
-2021:'不一定 · 朝简',
-2022:'不一定 · 朝简',
-2023:'不一定 · 朝简',
-2024:'不一定 · 朝简',
-2025:'不一定 · 朝简',
-2026:'不一定 · 朝简',
-};
-
-const GROUP_NOTES = {
- '窦唯': '个人名义作品与直接署名项目',
- '暮良文王': '阶段性乐队与实验编制',
- '不一定': '后期高频合作线索之一',
- '不一样': '合作项目脉络的另一主线',
- '朝简': '近年持续展开的合作项目',
- '译乐队': '译乐队相关公开作品',
- '东游记': '阶段性合作项目',
- 'FM3': '跨项目合作署名',
- '天宫图': '特定主题合作条目'
-};
-
-const MEDIUM_MAP = {
- D: '数字',
- CD: 'CD',
- DVD: 'DVD',
- LP: 'LP',
- DLT: '数字录音带',
- '磁带': '磁带'
-};
-
-async function init() {
- const resp = await fetch('albums.json');
- albums = await resp.json();
- renderStats();
- renderFilters();
- renderYearView();
- renderGroupView();
- bindBackToTop();
-}
-
-function eraLabel(y) {
- return ERAS[y] || '';
-}
-
-function groupOf(a) {
- const art = (a.album_artist || '').trim();
- if (art === '窦唯') return '窦唯';
- if (art.includes('暮良文王')) return '暮良文王';
- if (art.includes('不一定') && !art.includes('不一样')) return '不一定';
- if (art.includes('不一样')) return '不一样';
- if (art.includes('朝简')) return '朝简';
- if (art.includes('译乐队')) return '译乐队';
- if (art.includes('东游记')) return '东游记';
- if (art.includes('FM3')) return 'FM3';
- if (art.includes('天宫图')) return '天宫图';
- return null;
-}
-
-function coverHTML(album, eager = false) {
- if (album.cover) {
- const loading = eager ? 'eager' : 'lazy';
- return `<img src="covers/${album.cover}" alt="${escapeHTML(album.name)}" loading="${loading}" decoding="async" onerror="this.parentElement.innerHTML=placeholderHTML(${album.year ||0}, ${JSON.stringify(album.name || '')})">`;
- }
- return placeholderHTML(album.year ||0, album.name || '');
-}
-
-function placeholderHTML(year, name) {
- const shortName = escapeHTML((name || '').slice(0,4));
- return `<div class="cover-placeholder"><span class="yr">${year || ''}</span>${shortName ? `<span style="margin-top:0.42rem;font-size:0.6rem;letter-spacing:0.08em">${shortName}</span>` : ''}</div>`;
-}
-
-function cardHTML(album, index =0) {
- const dateStr = album.date || '';
- const artistLabel = formatArtistLine(album);
- const medium = formatMedium(album.medium);
- const eager = index <8;
-
- return `
- <article class="album-card" onclick='openModal(${serializeAlbumForModal(album)})'>
- <div class="cover-wrap">
- ${coverHTML(album, eager)}
- </div>
- <div class="card-text">
- <div class="card-name">${escapeHTML(album.name || '')}</div>
- <div class="card-meta">
- <div class="card-date">${escapeHTML(dateStr)}</div>
- ${artistLabel ? `<div class="card-artist">${escapeHTML(artistLabel)}</div>` : ''}
- ${medium ? `<span class="card-medium">${escapeHTML(medium)}</span>` : ''}
- </div>
- </div>
- </article>`;
-}
-
-function serializeAlbumForModal(album) {
- return JSON.stringify({
- name: album.name || '',
- artist: album.artist || '',
- album_artist: album.album_artist || '',
- date: album.date || '',
- year: album.year || '',
- medium: album.medium || '',
- description: album.description || '',
- cover: album.cover || ''
- });
-}
-
-function sortByDate(arr) {
- return [...arr].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-}
-
-function formatArtistLine(album) {
- const label = (album.album_artist || album.artist || '').replace(/\s+/g, ' ').trim();
- return label;
-}
-
-function formatMedium(medium) {
- return MEDIUM_MAP[medium] || medium || '';
-}
-
-function renderStats() {
- const years = albums.map(a => a.year).filter(Boolean);
- const minYear = Math.min(...years);
- const maxYear = Math.max(...years);
- const groupSet = new Set(albums.map(a => groupOf(a) || (a.album_artist || '其他')).filter(Boolean));
- const mediums = [...new Set(albums.map(a => formatMedium(a.medium)).filter(Boolean))];
- const stats = [
- { label: '时间跨度', value: `${minYear}—${maxYear}` },
- { label: '收录作品', value: `${albums.length} 张` },
- { label: '编排方式', value: '年份 /组合双索引' },
- { label: '项目脉络', value: `${groupSet.size}组` },
- { label: '介质类型', value: mediums.join(' / ') }
- ];
-
- document.getElementById('stats-bar').innerHTML = stats.map((item, idx) => `
- <span class="stats-item">
- <span class="stats-label">${item.label}</span>
- <span class="stats-value">${item.value}</span>
- </span>
- ${idx < stats.length -1 ? '<span class="stats-divider">·</span>' : ''}
- `).join('');
-}
-
-function renderYearView(filterYear) {
- const filtered = filterYear && filterYear !== 'all'
- ? albums.filter(a => String(a.year) === String(filterYear))
- : albums;
-
- const sorted = sortByDate(filtered);
- const byYear = {};
-
- for (const a of sorted) {
- const y = a.year ||0;
- if (!byYear[y]) byYear[y] = [];
- byYear[y].push(a);
- }
-
- const years = Object.keys(byYear).sort((a, b) => b - a);
- let html = '';
-
- for (const y of years) {
- const era = eraLabel(parseInt(y,10));
- html += `
- <section class="year-section">
- <div class="year-header">
- <span class="year-num">${y}</span>
- ${era ? `<span class="year-era">${escapeHTML(era)}</span>` : ''}
- <span class="year-count">${byYear[y].length} 张作品</span>
- </div>
- <div class="albums-grid">
- ${byYear[y].map((a, idx) => cardHTML(a, idx)).join('')}
- </div>
- </section>`;
- }
-
- document.getElementById('panel-year').innerHTML = html || '<p class="empty-state">无结果</p>';
-}
-
-function renderGroupView(filterYear) {
- const filtered = filterYear && filterYear !== 'all'
- ? albums.filter(a => String(a.year) === String(filterYear))
- : albums;
-
- const sorted = sortByDate(filtered);
- const groupOrder = ['窦唯', '暮良文王', '不一定', '不一样', '朝简', '译乐队', '东游记', 'FM3', '天宫图'];
- const byGroup = {};
-
- for (const g of groupOrder) byGroup[g] = [];
-
- const others = [];
- for (const a of sorted) {
- const g = groupOf(a);
- if (g && Object.prototype.hasOwnProperty.call(byGroup, g)) byGroup[g].push(a);
- else others.push(a);
- }
-
- let html = '';
- for (const g of groupOrder) {
- if (!byGroup[g].length) continue;
- html += `
- <section class="group-section">
- <div class="group-header">
- <div class="group-title-wrap">
- <div class="group-name">${escapeHTML(g)}</div>
- <div class="group-note">${escapeHTML(GROUP_NOTES[g] || '按项目线索归档')}</div>
- </div>
- <span class="group-count">${byGroup[g].length} 张作品</span>
- </div>
- <div class="albums-grid">
- ${byGroup[g].map((a, idx) => cardHTML(a, idx)).join('')}
- </div>
- </section>`;
- }
-
- const unmatchedGroups = {};
- for (const a of others) {
- const g = (a.album_artist || a.artist || '其他').trim() || '其他';
- if (!unmatchedGroups[g]) unmatchedGroups[g] = [];
- unmatchedGroups[g].push(a);
- }
-
- for (const [g, gas] of Object.entries(unmatchedGroups)) {
- html += `
- <section class="group-section">
- <div class="group-header">
- <div class="group-title-wrap">
- <div class="group-name">${escapeHTML(g)}</div>
- <div class="group-note">未纳入主脉络分类的署名条目</div>
- </div>
- <span class="group-count">${gas.length} 张作品</span>
- </div>
- <div class="albums-grid">
- ${gas.map((a, idx) => cardHTML(a, idx)).join('')}
- </div>
- </section>`;
- }
-
- document.getElementById('panel-group').innerHTML = html || '<p class="empty-state">无结果</p>';
-}
-
-function renderFilters() {
- const years = [...new Set(albums.map(a => a.year).filter(Boolean))].sort((a, b) => b - a);
- const bar = document.getElementById('filter-bar');
- const tags = ['<button class="filter-tag active" data-year="all">全部</button>']
- .concat(years.map(y => `<button class="filter-tag" data-year="${y}">${y}</button>`))
- .join('');
-
- bar.innerHTML = `
- <span class="filter-label">Index</span>
- <div class="filter-tags">${tags}</div>`;
-
- bar.querySelectorAll('.filter-tag').forEach(btn => {
- btn.addEventListener('click', () => {
- const year = btn.dataset.year;
- document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
- btn.classList.add('active');
- if (currentView === 'year') renderYearView(year);
- else renderGroupView(year);
- });
- });
-}
-
-function descriptionToHTML(desc) {
- const text = (desc || '').trim();
- if (!text) return '<p>（暂无介绍）</p>';
-
- const blocks = text.split(/\n\s*\n/).map(block => block.trim()).filter(Boolean);
- return blocks.map(block => {
- const escaped = escapeHTML(block)
- .replace(/(制作人|录音\/混音\/制作执行|录音\/混音|录音地点|录音时间地点|录音时间|录音棚|制作时间地点|制作时间|制作地点|文学顾问|鸣谢|女声|男声|钢琴|鼓|吉它|氛围吉它|合成器|贝斯|笙|箫|阮|吹管儿|海螺|键盘|贝斯\/阮|六弦琴\/贝斯\/吹管乐)：/g, '<strong>$1：</strong>');
- return `<p>${escaped}</p>`;
- }).join('');
-}
-
-function openModal(album) {
- if (!album) return;
-
- const coverEl = document.getElementById('modal-cover');
- coverEl.innerHTML = album.cover
- ? `<img src="covers/${album.cover}" alt="${escapeHTML(album.name)}" decoding="async" onerror="this.parentElement.innerHTML=placeholderHTML(${album.year ||0}, ${JSON.stringify(album.name || '')})">`
- : placeholderHTML(album.year ||0, album.name || '');
-
- document.getElementById('modal-name').textContent = album.name || '';
-
- const metaLine1 = [album.date, album.year ? `${album.year} 年` : '', formatMedium(album.medium)].filter(Boolean).join(' · ');
- const metaLine2 = [album.album_artist || '', album.artist && album.artist !== album.album_artist ? album.artist : ''].filter(Boolean).join(' · ');
- const metaHTML = [];
- if (metaLine1) metaHTML.push(`<div class="modal-meta-line">${escapeHTML(metaLine1)}</div>`);
- if (metaLine2) metaHTML.push(`<div class="modal-meta-line">${escapeHTML(metaLine2)}</div>`);
- document.getElementById('modal-meta').innerHTML = metaHTML.join('');
-
- document.getElementById('modal-desc').innerHTML = descriptionToHTML(album.description || '');
-
- document.getElementById('modal').classList.add('open');
- document.body.classList.add('modal-open');
-}
-
-function closeModal() {
- document.getElementById('modal').classList.remove('open');
- document.body.classList.remove('modal-open');
-}
-
-function bindBackToTop() {
- const btn = document.getElementById('back-to-top');
- const toggle = () => {
- if (window.scrollY >720) btn.classList.add('visible');
- else btn.classList.remove('visible');
- };
-
- window.addEventListener('scroll', toggle, { passive: true });
- toggle();
-
- btn.addEventListener('click', () => {
- window.scrollTo({ top:0, behavior: 'smooth' });
- });
-}
-
-function escapeHTML(str) {
- return String(str)
- .replace(/&/g, '&amp;')
- .replace(/</g, '&lt;')
- .replace(/>/g, '&gt;')
- .replace(/"/g, '&quot;')
- .replace(/'/g, '&#39;');
-}
-
-document.getElementById('modal-close').addEventListener('click', closeModal);
-document.getElementById('modal').addEventListener('click', (e) => {
- if (e.target === document.getElementById('modal')) closeModal();
-});
-document.addEventListener('keydown', (e) => {
- if (e.key === 'Escape') closeModal();
-});
-
-document.querySelectorAll('.nav-tab').forEach(tab => {
- tab.addEventListener('click', () => {
- document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
- document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
- tab.classList.add('active');
- currentView = tab.dataset.view;
- document.getElementById(`panel-${currentView}`).classList.add('active');
- const activeYear = document.querySelector('.filter-tag.active')?.dataset.year || 'all';
- if (currentView === 'year') renderYearView(activeYear);
- else renderGroupView(activeYear);
- });
-});
-
-init();
-</script>
+<script src="albums.js" defer></script>
 </body>
 </html>
