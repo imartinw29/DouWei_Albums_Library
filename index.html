@@ -29,12 +29,10 @@
     line-height: 1.6;
   }
 
-  /* ── Scrollbar ── */
   ::-webkit-scrollbar { width: 5px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-  /* ── Header ── */
   header {
     position: sticky;
     top: 0;
@@ -75,7 +73,6 @@
     margin-top: -2px;
   }
 
-  /* Nav tabs */
   .nav-tabs {
     display: flex;
     gap: 0;
@@ -97,9 +94,7 @@
     white-space: nowrap;
   }
 
-  .nav-tab:not(:last-child) {
-    border-right: 1px solid var(--border);
-  }
+  .nav-tab:not(:last-child) { border-right: 1px solid var(--border); }
 
   .nav-tab.active {
     background: var(--accent);
@@ -112,7 +107,6 @@
     background: var(--surface2);
   }
 
-  /* ── Filter bar ── */
   .filter-bar {
     max-width: 1440px;
     margin: 0 auto;
@@ -143,17 +137,13 @@
     background: rgba(184,149,106,0.07);
   }
 
-  /* ── Main content ── */
   .main {
     max-width: 1440px;
     margin: 0 auto;
     padding: 2rem 3rem 6rem;
   }
 
-  /* ── Year sections ── */
-  .year-section {
-    margin-bottom: 3rem;
-  }
+  .year-section { margin-bottom: 3rem; }
 
   .year-header {
     display: flex;
@@ -190,10 +180,7 @@
     gap: 1.4rem;
   }
 
-  /* ── Group view ── */
-  .group-section {
-    margin-bottom: 3rem;
-  }
+  .group-section { margin-bottom: 3rem; }
 
   .group-header {
     font-size: 1.05rem;
@@ -215,11 +202,7 @@
     letter-spacing: 0.05em;
   }
 
-  /* ── Album card ── */
-  .album-card {
-    cursor: pointer;
-    position: relative;
-  }
+  .album-card { cursor: pointer; }
 
   .cover-wrap {
     position: relative;
@@ -230,9 +213,7 @@
     transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   }
 
-  .album-card:hover .cover-wrap {
-    transform: translateY(-3px);
-  }
+  .album-card:hover .cover-wrap { transform: translateY(-3px); }
 
   .cover-wrap img {
     width: 100%;
@@ -271,37 +252,7 @@
     display: block;
   }
 
-  /* Play button */
-  .play-btn {
-    position: absolute;
-    bottom: 0.5rem;
-    right: 0.5rem;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: rgba(184,149,106,0.92);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transform: scale(0.75);
-    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-    cursor: pointer;
-    border: none;
-    z-index: 2;
-  }
-
-  .album-card:hover .play-btn {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  .play-btn svg { width: 13px; height: 13px; fill: #000; }
-
-  /* Card text */
-  .card-text {
-    padding: 0.6rem 0.1rem 0.2rem;
-  }
+  .card-text { padding: 0.6rem 0.1rem 0.2rem; }
 
   .card-name {
     font-size: 0.85rem;
@@ -366,25 +317,25 @@
   }
 
   .modal {
+    position: relative;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 6px;
     max-width: 820px;
     width: 100%;
     max-height: 90vh;
-    overflow-y: auto;
+    overflow: hidden;
     display: grid;
-    grid-template-columns: 300px 1fr;
+    grid-template-columns: 500px 1fr;
     transform: scale(0.96) translateY(10px);
     transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
   }
 
-  .modal-overlay.open .modal {
-    transform: scale(1) translateY(0);
-  }
+  .modal-overlay.open .modal { transform: scale(1) translateY(0); }
 
   .modal-cover {
-    aspect-ratio: 1;
+    width: 500px;
+    height: 500px;
     overflow: hidden;
     border-radius: 6px 0 0 6px;
     background: var(--surface2);
@@ -396,12 +347,14 @@
   }
 
   .modal-cover img {
-    width: 100%;
-    height: 100%;
+    width: 500px;
+    height: 500px;
     object-fit: cover;
   }
 
   .modal-cover .cover-placeholder {
+    width: 500px;
+    height: 500px;
     border-radius: 0;
   }
 
@@ -465,16 +418,16 @@
     background: rgba(0,0,0,0.8);
   }
 
-  /* ── Hidden ── */
   .view-panel { display: none; }
   .view-panel.active { display: block; }
 
-  /* ── Responsive ── */
   @media (max-width: 900px) {
     header, .filter-bar, .main { padding-left: 1.2rem; padding-right: 1.2rem; }
-    .modal { grid-template-columns: 1fr; max-height: 95vh; }
-    .modal-cover { aspect-ratio: 16/9; border-radius: 6px 6px 0 0; max-height: 40vh; }
-    .modal-body { padding: 1.2rem; }
+    .modal { grid-template-columns: 1fr; max-height: 95vh; overflow-y: auto; }
+    .modal-cover { width: 100%; height: auto; aspect-ratio: 1; border-radius: 6px 6px 0 0; max-height: 50vh; }
+    .modal-cover img { width: 100%; height: 100%; }
+    .modal-cover .cover-placeholder { width: 100%; height: auto; aspect-ratio: 1; }
+    .modal-body { padding: 1.2rem; max-height: none; }
     .nav-tab { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
   }
 
@@ -520,7 +473,6 @@
 </div>
 
 <script>
-// ── Data ──
 let albums = [];
 
 async function init() {
@@ -531,7 +483,6 @@ async function init() {
   renderGroupView();
 }
 
-// ── Era labels ──
 const ERAS = {
   1994:'黑梦', 1995:'黑梦', 1996:'黑梦', 1997:'黑梦', 1998:'黑梦', 1999:'黑梦',
   2000:'影视 OST', 2001:'影视 OST',
@@ -556,7 +507,6 @@ const ERAS = {
 
 function eraLabel(y) { return ERAS[y] || ''; }
 
-// ── Group mapping ──
 function groupOf(a) {
   const art = a.album_artist || '';
   if (art === '窦唯') return '窦唯';
@@ -571,7 +521,6 @@ function groupOf(a) {
   return null;
 }
 
-// ── Cover HTML ──
 function coverHTML(album) {
   if (album.cover) {
     return `<img src="covers/${album.cover}" alt="${album.name}"
@@ -587,35 +536,37 @@ function placeholderHTML(year, name) {
   </div>`;
 }
 
-// ── Card HTML ──
 function cardHTML(album) {
   const artists = (album.album_artist || album.artist || '').split(/[;；]/).map(a => a.trim());
+  const dateStr = album.date || '';
   return `
-  <div class="album-card" data-album-id="${album.name}" onclick="openModal(albums.find(a=>a.name===${JSON.stringify(album.name)}))">
+  <div class="album-card" onclick="openModal(albums.find(a=>a.name===${JSON.stringify(album.name)}))">
     <div class="cover-wrap">
       ${coverHTML(album)}
-      <button class="play-btn" title="查看详情" onclick="event.stopPropagation(); openModal(albums.find(a=>a.name===${JSON.stringify(album.name)}))">
-        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-      </button>
     </div>
     <div class="card-text">
       <div class="card-name">${album.name}</div>
       <div class="card-meta">
-        <span class="card-year">${album.year || ''}</span>
+        <span class="card-year">${dateStr}</span>
         ${artists.length > 1 ? `<span class="card-dot"></span><span class="card-artist">${album.album_artist}</span>` : ''}
       </div>
     </div>
   </div>`;
 }
 
-// ── Year view ──
+function sortByDate(arr) {
+  return [...arr].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+}
+
 function renderYearView(filterYear) {
   const filtered = filterYear && filterYear !== 'all'
     ? albums.filter(a => String(a.year) === String(filterYear))
     : albums;
 
+  const sorted = sortByDate(filtered);
+
   const byYear = {};
-  for (const a of filtered) {
+  for (const a of sorted) {
     const y = a.year || 0;
     if (!byYear[y]) byYear[y] = [];
     byYear[y].push(a);
@@ -642,18 +593,19 @@ function renderYearView(filterYear) {
   document.getElementById('panel-year').innerHTML = html || '<p style="color:var(--text-dim);padding:2rem">无结果</p>';
 }
 
-// ── Group view ──
 function renderGroupView(filterYear) {
   const filtered = filterYear && filterYear !== 'all'
     ? albums.filter(a => String(a.year) === String(filterYear))
     : albums;
+
+  const sorted = sortByDate(filtered);
 
   const groupOrder = ['窦唯','暮良文王','不一定','不一样','朝简','译乐队','东游记','FM3','天宫图'];
   const byGroup = {};
   for (const g of groupOrder) byGroup[g] = [];
 
   let others = [];
-  for (const a of filtered) {
+  for (const a of sorted) {
     const g = groupOf(a);
     if (g && byGroup.hasOwnProperty(g)) {
       byGroup[g].push(a);
@@ -678,7 +630,7 @@ function renderGroupView(filterYear) {
       </div>
     </div>`;
   }
-  // "其他" albums not matched
+
   const unmatchedGroups = {};
   for (const a of others) {
     const g = a.album_artist || '未知';
@@ -699,7 +651,6 @@ function renderGroupView(filterYear) {
   document.getElementById('panel-group').innerHTML = html || '<p style="color:var(--text-dim);padding:2rem">无结果</p>';
 }
 
-// ── Filters ──
 function renderFilters() {
   const years = [...new Set(albums.map(a => a.year).filter(Boolean))].sort((a,b) => b - a);
   const bar = document.getElementById('filter-bar');
@@ -720,7 +671,6 @@ function renderFilters() {
   });
 }
 
-// ── Modal ──
 function openModal(album) {
   if (!album) return;
 
@@ -756,7 +706,6 @@ document.getElementById('modal').addEventListener('click', e => {
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
-// ── Tab switch ──
 let currentView = 'year';
 document.querySelectorAll('.nav-tab').forEach(tab => {
   tab.addEventListener('click', () => {
@@ -765,16 +714,13 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
     tab.classList.add('active');
     currentView = tab.dataset.view;
     document.getElementById(`panel-${currentView}`).classList.add('active');
-    // Re-render with current filter
     const activeYear = document.querySelector('.filter-tag.active')?.dataset.year || 'all';
     if (currentView === 'year') renderYearView(activeYear);
     else renderGroupView(activeYear);
   });
 });
 
-// Make albums globally accessible for onclick
 window.albums = albums;
-
 init();
 </script>
 </body>
