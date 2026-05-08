@@ -1,6 +1,7 @@
 let albums = [];
 let currentView = 'year';
 let currentFilterYear = 'all';
+let currentFilterGroup = 'all';
 
 async function init() {
   try {
@@ -110,32 +111,35 @@ function sortByDate(arr) {
   return [...arr].sort((a, b) => (b.date || '').localeCompare(a.date || ''));
 }
 
-function renderStats(filterYear) {
-  const filtered = filterYear && filterYear !== 'all'
-    ? albums.filter(a => String(a.year) === String(filterYear))
-    : albums;
+function renderStats() {
+  const filtered = applyFilters(albums);
   const years = filtered.map(a => Number(a.year)).filter(Boolean).sort((a, b) => a - b);
   const media = [...new Set(filtered.map(a => a.medium).filter(Boolean))];
   const minY = years[0] || '';
   const maxY = years[years.length - 1] || '';
   const yearLabel = minY && maxY ? `${minY}—${maxY}` : '—';
-  const scopeLabel = filterYear && filterYear !== 'all' ? `${filterYear} 年作品` : '年份 / 组合双索引';
+
+  let scopeParts = [];
+  if (currentFilterYear !== 'all') scopeParts.push(currentFilterYear);
+  if (currentFilterGroup !== 'all') scopeParts.push(currentFilterGroup);
+
+  const scopeLabel = scopeParts.length
+    ? scopeParts.join(' · ') + ' 作品'
+    : '年份 / 组合双索引';
+
   document.getElementById('stats-bar').innerHTML = `
     <span class="stats-item"><span class="stats-label">时间跨度</span><span class="stats-value">${yearLabel}</span></span>
     <span class="stats-divider">·</span>
     <span class="stats-item"><span class="stats-label">收录作品</span><span class="stats-value">${filtered.length} 张</span></span>
     <span class="stats-divider">·</span>
-    <span class="stats-item"><span class="stats-label">编排方式</span><span class="stats-value">${scopeLabel}</span></span>
+    <span class="stats-item"><span class="stats-label">当前筛选</span><span class="stats-value">${scopeLabel}</span></span>
     <span class="stats-divider">·</span>
     <span class="stats-item"><span class="stats-label">介质类型</span><span class="stats-value">${media.length} 种</span></span>`;
 }
 
-function renderYearView(filterYear) {
-  currentFilterYear = filterYear || currentFilterYear || 'all';
-  renderStats(currentFilterYear);
-  const filtered = currentFilterYear !== 'all'
-    ? albums.filter(a => String(a.year) === String(currentFilterYear))
-    : albums;
+function renderYearView() {
+  renderStats();
+  const filtered = applyFilters(albums);
   const sorted = sortByDate(filtered);
 
   const byYear = {};
@@ -166,11 +170,8 @@ function renderYearView(filterYear) {
   document.getElementById('panel-year').innerHTML = html || '<p style="color:var(--text-dim);padding:2rem">无结果</p>';
 }
 
-function renderGroupView(filterYear) {
-  currentFilterYear = filterYear || currentFilterYear || 'all';
-  const filtered = currentFilterYear !== 'all'
-    ? albums.filter(a => String(a.year) === String(currentFilterYear))
-    : albums;
+function renderGroupView() {
+  const filtered = applyFilters(albums);
   const sorted = sortByDate(filtered);
 
   const groupOrder = ['窦唯','暮良文王','不一定','不一样','朝简','译乐队','东游记','FM3','天宫图'];
@@ -228,23 +229,56 @@ function renderGroupView(filterYear) {
 }
 
 function renderFilters() {
+  // ── 年份标签 ──
   const years = [...new Set(albums.map(a => a.year).filter(Boolean))].sort((a, b) => b - a);
-  const tagsEl = document.querySelector('.filter-tags');
-  let html = `<button class="filter-tag ${currentFilterYear === 'all' ? 'active' : ''}" data-year="all">全部</button>`;
+  const yearTagsEl = document.getElementById('filter-year-tags');
+  let yhtml = `<button class="filter-tag ${currentFilterYear === 'all' ? 'active' : ''}" data-year="all">全部</button>`;
   for (const y of years) {
-    html += `<button class="filter-tag ${currentFilterYear === String(y) ? 'active' : ''}" data-year="${y}">${y}</button>`;
+    yhtml += `<button class="filter-tag ${currentFilterYear === String(y) ? 'active' : ''}" data-year="${y}">${y}</button>`;
   }
-  tagsEl.innerHTML = html;
+  yearTagsEl.innerHTML = yhtml;
 
-  tagsEl.querySelectorAll('.filter-tag').forEach(btn => {
+  // ── 组合标签 ──
+  const allGroups = albums.map(a => groupOf(a)).filter(Boolean);
+  const groups = [...new Set(allGroups)];
+  const sorted = GROUP_ORDER.filter(g => groups.includes(g));
+  const groupTagsEl = document.getElementById('filter-group-tags');
+  let ghtml = `<button class="filter-tag ${currentFilterGroup === 'all' ? 'active' : ''}" data-group="all">全部</button>`;
+  for (const g of sorted) {
+    ghtml += `<button class="filter-tag ${currentFilterGroup === g ? 'active' : ''}" data-group="${g}">${g}</button>`;
+  }
+  groupTagsEl.innerHTML = ghtml;
+
+  // ── 年份点击 ──
+  yearTagsEl.querySelectorAll('.filter-tag').forEach(btn => {
     btn.addEventListener('click', () => {
       currentFilterYear = btn.dataset.year;
-      tagsEl.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
-      btn.classList.add('active');
-      if (currentView === 'year') renderYearView(currentFilterYear);
-      else renderGroupView(currentFilterYear);
+      renderFilters();
+      if (currentView === 'year') renderYearView();
+      else renderGroupView();
     });
   });
+
+  // ── 组合点击 ──
+  groupTagsEl.querySelectorAll('.filter-tag').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentFilterGroup = btn.dataset.group;
+      renderFilters();
+      if (currentView === 'year') renderYearView();
+      else renderGroupView();
+    });
+  });
+}
+
+function applyFilters(arr) {
+  let filtered = arr;
+  if (currentFilterYear !== 'all') {
+    filtered = filtered.filter(a => String(a.year) === String(currentFilterYear));
+  }
+  if (currentFilterGroup !== 'all') {
+    filtered = filtered.filter(a => groupOf(a) === currentFilterGroup);
+  }
+  return filtered;
 }
 
 function openModal(album) {
