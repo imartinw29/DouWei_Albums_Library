@@ -23,19 +23,6 @@ async function init() {
 // 按当年实际专辑算出出现了哪些组合（去重、按固定顺序排列）
 const GROUP_ORDER = ['窦唯','暮良文王','不一定','不一样','朝简','译乐队','东游记','FM3','天宫图'];
 
-function yearArtists(y) {
-  const groups = new Set();
-  for (const a of albums) {
-    if (a.year === y) {
-      const g = groupOf(a);
-      if (g) groups.add(g);
-    }
-  }
-  return GROUP_ORDER.filter(g => groups.has(g)).join(' · ');
-}
-
-function eraLabel(y) { return yearArtists(y); }
-
 function groupOf(a) {
   const art = a.album_artist || '';
   if (art === '窦唯') return '窦唯';
@@ -153,7 +140,13 @@ function renderYearView() {
   let html = '';
 
   for (const y of years) {
-    const era = eraLabel(parseInt(y));
+    // 从该年份筛选后的专辑中计算实际组合（而非全局）
+    const yearGroups = new Set();
+    for (const a of byYear[y]) {
+      const g = groupOf(a);
+      if (g) yearGroups.add(g);
+    }
+    const era = GROUP_ORDER.filter(g => yearGroups.has(g)).join(' · ');
     html += `
     <div class="year-section">
       <div class="year-header">
@@ -242,10 +235,14 @@ function renderFilters() {
   const allGroups = albums.map(a => groupOf(a)).filter(Boolean);
   const groups = [...new Set(allGroups)];
   const sorted = GROUP_ORDER.filter(g => groups.includes(g));
+  const hasOthers = albums.some(a => !groupOf(a));
   const groupTagsEl = document.getElementById('filter-group-tags');
   let ghtml = `<button class="filter-tag ${currentFilterGroup === 'all' ? 'active' : ''}" data-group="all">全部</button>`;
   for (const g of sorted) {
     ghtml += `<button class="filter-tag ${currentFilterGroup === g ? 'active' : ''}" data-group="${g}">${g}</button>`;
+  }
+  if (hasOthers) {
+    ghtml += `<button class="filter-tag ${currentFilterGroup === '其他' ? 'active' : ''}" data-group="其他">其他</button>`;
   }
   groupTagsEl.innerHTML = ghtml;
 
@@ -276,7 +273,11 @@ function applyFilters(arr) {
     filtered = filtered.filter(a => String(a.year) === String(currentFilterYear));
   }
   if (currentFilterGroup !== 'all') {
-    filtered = filtered.filter(a => groupOf(a) === currentFilterGroup);
+    if (currentFilterGroup === '其他') {
+      filtered = filtered.filter(a => !groupOf(a));
+    } else {
+      filtered = filtered.filter(a => groupOf(a) === currentFilterGroup);
+    }
   }
   return filtered;
 }
