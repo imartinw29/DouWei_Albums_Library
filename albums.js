@@ -19,29 +19,21 @@ async function init() {
   }
 }
 
-const ERAS = {
-  1994:'黑梦', 1995:'黑梦', 1996:'黑梦', 1997:'黑梦', 1998:'黑梦', 1999:'黑梦',
-  2000:'影视 OST', 2001:'影视 OST',
-  2002:'暮良文王', 2003:'暮良文王',
-  2004:'暮良文王 · 不一定',
-  2005:'暮良文王 · 不一定', 2006:'不一定 · 不一样',
-  2007:'不一定 · 不一样', 2008:'不一定 · 不一样',
-  2009:'不一定',
-  2010:'不一样', 2011:'不一定', 2012:'不一样',
-  2013:'不一定', 2014:'不一样 · 天宫图',
-  2015:'不一样 · 天真君公',
-  2016:'不一样', 2017:'不一样', 2018:'不一定',
-  2019:'不一定 · 朝简',
-  2020:'不一定 · 朝简',
-  2021:'不一定 · 朝简',
-  2022:'不一定 · 朝简',
-  2023:'不一定 · 朝简',
-  2024:'不一定 · 朝简',
-  2025:'不一定 · 朝简',
-  2026:'不一定 · 朝简',
-};
+// 按当年实际专辑算出出现了哪些组合（去重、按固定顺序排列）
+const GROUP_ORDER = ['窦唯','暮良文王','不一定','不一样','朝简','译乐队','东游记','FM3','天宫图'];
 
-function eraLabel(y) { return ERAS[y] || ''; }
+function yearArtists(y) {
+  const groups = new Set();
+  for (const a of albums) {
+    if (a.year === y) {
+      const g = groupOf(a);
+      if (g) groups.add(g);
+    }
+  }
+  return GROUP_ORDER.filter(g => groups.has(g)).join(' · ');
+}
+
+function eraLabel(y) { return yearArtists(y); }
 
 function groupOf(a) {
   const art = a.album_artist || '';
