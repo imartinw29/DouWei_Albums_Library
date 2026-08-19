@@ -69,6 +69,12 @@
   gap: 0.18rem;
 }
 
+.logo-line {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
 .logo-home {
   display: inline-block;
   font-size: 1.1rem;
@@ -837,8 +843,10 @@
   <div class="header-inner">
     <div class="logo">
       <a href="index.html" class="logo-home" aria-label="返回首页">←</a>
-      <span class="logo-name">窦唯</span>
-      <span class="logo-sub">专辑档案 · 1994—2026</span>
+      <div class="logo-line">
+        <span class="logo-name">窦唯</span>
+        <span class="logo-sub">专辑档案 · 1994—2026</span>
+      </div>
     </div>
     <nav class="nav-tabs">
       <button class="nav-tab active" data-view="year">按年份</button>
