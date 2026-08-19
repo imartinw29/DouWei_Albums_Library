@@ -186,26 +186,94 @@
    letter-spacing: 0.06em;
  }
 
-/* ── Index Bar (merged sticky container) ── */
-.index-bar {
-  position: sticky;
-  top: 68px;
-  z-index: 70;
+/* ── 侧边筛选抽屉 ── */
+.drawer-tab {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  writing-mode: vertical-rl;
+  letter-spacing: 0.35em;
+  padding: 1.2rem 0.55rem;
+  border: 1px solid rgba(176,147,110,0.16);
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  background: rgba(9,9,9,0.85);
+  backdrop-filter: blur(10px);
+  color: var(--text-mid);
+  font-size: 0.75rem;
+  cursor: pointer;
+  z-index: 80;
+  transition: color 0.2s ease, background 0.2s ease;
+  font-family: inherit;
+}
+.drawer-tab:hover {
+  color: var(--accent-light);
+  background: rgba(20,18,15,0.92);
+}
+.filter-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 300px;
+  max-width: 88vw;
+  background: rgba(12,11,10,0.92);
+  backdrop-filter: blur(20px);
+  border-left: 1px solid var(--border-strong);
+  z-index: 90;
+  transform: translateX(100%);
+  transition: transform 0.28s ease;
+  overflow-y: auto;
+  padding: 1.2rem 1.4rem;
+  box-sizing: border-box;
+}
+.drawer-tab:hover + .filter-drawer,
+.filter-drawer:hover,
+.filter-drawer.open {
+  transform: translateX(0);
+}
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  z-index: 85;
+}
+.drawer-overlay.show { opacity: 1; visibility: visible; }
+.drawer-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.6rem;
+  padding-bottom: 0.8rem;
   border-bottom: 1px solid var(--border);
-  background: rgba(9,9,9,0.80);
-  backdrop-filter: blur(16px);
 }
-
-.index-bar .stats-bar {
-  border-bottom: none;
+.drawer-title {
+  font-size: 0.85rem;
+  letter-spacing: 0.3em;
+  color: var(--text-soft);
 }
-
-.index-bar .filter-bar {
-  position: static;
-  top: auto;
-  border-bottom: none;
-  background: transparent;
-  backdrop-filter: none;
+.drawer-close {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.2rem;
+  font-family: inherit;
+}
+.drawer-close:hover { color: var(--text-soft); }
+.filter-drawer .stats-bar {
+  padding-top: 0.5rem;
+  padding-bottom: 0.7rem;
+}
+.filter-drawer .filter-bar {
+  min-height: auto;
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
 }
 
 /* ── Stats Bar ── */
@@ -734,7 +802,7 @@
 
  /* ── Responsive ── */
  @media (max-width: 900px) {
-   header, .hero-shell, .stats-bar, .filter-bar, .main, .page-footer { padding-left: 1.2rem; padding-right: 1.2rem; }
+   header, .hero-shell, .main, .page-footer { padding-left: 1.2rem; padding-right: 1.2rem; }
    .modal {
      grid-template-columns: 1fr;
      height: auto;
@@ -747,7 +815,7 @@
    .modal-body { height: auto; max-height: none; padding: 1.2rem; overflow: visible; }
    .modal-desc { overflow-y: visible; }
    .nav-tab { padding: 0.4rem 0.85rem; font-size: 0.75rem; }
-   .filter-bar { top: auto; }
+   .filter-drawer { width: min(320px, 88vw); padding: 1rem 1.1rem; }
  }
 
  @media (max-width: 600px) {
@@ -782,7 +850,14 @@
   </div>
 </div>
 
-<div class="index-bar" id="index-bar">
+<!-- 侧边筛选抽屉 -->
+<button class="drawer-tab" id="drawer-tab" type="button" aria-label="筛选">筛&nbsp;选</button>
+<div class="drawer-overlay" id="drawer-overlay"></div>
+<aside class="filter-drawer" id="filter-drawer">
+  <div class="drawer-head">
+    <span class="drawer-title">索&nbsp;引</span>
+    <button class="drawer-close" id="drawer-close" type="button" aria-label="关闭">✕</button>
+  </div>
   <div class="stats-bar" id="stats-bar">
     <span class="stats-item"><span class="stats-label">时间跨度</span><span class="stats-value">1994—2026</span></span>
     <span class="stats-divider">·</span>
@@ -800,7 +875,7 @@
     <span class="filter-label">专辑艺术家</span>
     <div class="filter-tags" id="filter-group-tags"></div>
   </div>
-</div>
+</aside>
 
 <div class="main">
   <div class="view-panel active" id="panel-year"></div>

@@ -14,6 +14,7 @@ async function init() {
     renderTimelineView();
     renderGroupView();
     bindBackToTop();
+    bindDrawer();
   } catch(e) {
     console.error('[init] error:', e);
     document.getElementById('panel-year').innerHTML =
@@ -367,6 +368,28 @@ function openModal(album) {
 function closeModal() {
   document.getElementById('modal').classList.remove('open');
   document.body.classList.remove('modal-open');
+}
+
+function bindDrawer() {
+  const tab = document.getElementById('drawer-tab');
+  const drawer = document.getElementById('filter-drawer');
+  const overlay = document.getElementById('drawer-overlay');
+  const closeBtn = document.getElementById('drawer-close');
+  if (!tab || !drawer || !overlay) return;
+
+  tab.addEventListener('click', () => {
+    const isOpen = drawer.classList.contains('open');
+    drawer.classList.toggle('open', !isOpen);
+    overlay.classList.toggle('show', !isOpen);
+  });
+  overlay.addEventListener('click', () => {
+    drawer.classList.remove('open');
+    overlay.classList.remove('show');
+  });
+  closeBtn.addEventListener('click', () => {
+    drawer.classList.remove('open');
+    overlay.classList.remove('show');
+  });
 }
 
 function bindBackToTop() {
