@@ -666,6 +666,72 @@
  .view-panel { display: none; }
  .view-panel.active { display: block; }
 
+ /* ── Timeline view ── */
+ .timeline-section {
+   max-width: 1200px;
+   margin: 0 auto 4.5rem;
+   padding: 0 3rem;
+ }
+ .timeline-year {
+   font-size: clamp(2.6rem, 6vw, 4.2rem);
+   font-weight: 200;
+   letter-spacing: 0.14em;
+   color: var(--text);
+   line-height: 1;
+   margin-bottom: 1.6rem;
+   padding-bottom: 0.6rem;
+   border-bottom: 1px solid var(--border);
+ }
+ .timeline-count {
+   font-size: 0.75rem;
+   font-weight: 400;
+   letter-spacing: 0.08em;
+   color: var(--text-dim);
+   margin-left: 0.8rem;
+ }
+ .timeline-flow {
+   display: flex;
+   flex-wrap: wrap;
+   align-items: flex-start;
+ }
+ .timeline-item {
+   width: 180px;
+   margin: 0.8rem 1.4rem 1.6rem 0;
+   cursor: pointer;
+ }
+ .timeline-item:nth-child(even) { transform: translateY(30px); }
+ .timeline-item:nth-child(3n) { transform: translateY(10px); }
+ .timeline-item .cover-wrap {
+   aspect-ratio: 1;
+   overflow: hidden;
+   background: var(--surface);
+ }
+ .timeline-item .cover-wrap img {
+   width: 100%;
+   height: 100%;
+   object-fit: cover;
+   transition: filter 0.25s ease;
+ }
+ .timeline-item:hover .cover-wrap img { filter: brightness(1.08); }
+ .tl-name {
+   margin-top: 0.5rem;
+   font-size: 0.78rem;
+   color: var(--text-soft);
+   letter-spacing: 0.05em;
+   line-height: 1.4;
+ }
+ .tl-date {
+   font-size: 0.65rem;
+   color: var(--text-dim);
+   font-variant-numeric: tabular-nums;
+   margin-top: 0.15rem;
+ }
+ @media (max-width: 600px) {
+   .timeline-section { padding: 0 1.2rem; }
+   .timeline-item { width: 42%; margin-right: 0.9rem; }
+   .timeline-item:nth-child(even) { transform: translateY(16px); }
+ }
+
  /* ── Responsive ── */
  @media (max-width: 900px) {
    header, .hero-shell, .stats-bar, .filter-bar, .main, .page-footer { padding-left: 1.2rem; padding-right: 1.2rem; }
@@ -702,6 +768,7 @@
     </div>
     <nav class="nav-tabs">
       <button class="nav-tab active" data-view="year">按年份</button>
+      <button class="nav-tab" data-view="timeline">时间流</button>
       <button class="nav-tab" data-view="group">按组合</button>
     </nav>
   </div>
@@ -737,6 +804,7 @@
 
 <div class="main">
   <div class="view-panel active" id="panel-year"></div>
+  <div class="view-panel" id="panel-timeline"></div>
   <div class="view-panel" id="panel-group"></div>
 </div>
 

@@ -11,6 +11,7 @@ async function init() {
     renderStats();
     renderFilters();
     renderYearView();
+    renderTimelineView();
     renderGroupView();
     bindBackToTop();
   } catch(e) {
@@ -221,6 +222,50 @@ function renderGroupView() {
   document.getElementById('panel-group').innerHTML = html || '<p style="color:var(--text-dim);padding:2rem">无结果</p>';
 }
 
+function renderTimelineView() {
+  const filtered = applyFilters(albums);
+  const byYear = {};
+  for (const a of filtered) {
+    const y = a.year || 0;
+    if (!byYear[y]) byYear[y] = [];
+    byYear[y].push(a);
+  }
+  const years = Object.keys(byYear).sort((a, b) => a - b); // 旧 → 新，顺着创作轨迹走
+  let html = '';
+  for (const y of years) {
+    html += `
+    <section class="timeline-section">
+      <div class="timeline-year">${y}<span class="timeline-count">${byYear[y].length} 张</span></div>
+      <div class="timeline-flow">
+        ${byYear[y].map(a => timelineItemHTML(a)).join('')}
+      </div>
+    </section>`;
+  }
+  document.getElementById('panel-timeline').innerHTML = html || '<p style="color:var(--text-dim);padding:2rem">无结果</p>';
+}
+
+function timelineItemHTML(album) {
+  const dateStr = album.date || '';
+  const payload = JSON.stringify({
+    name: album.name,
+    artist: album.artist,
+    album_artist: album.album_artist,
+    date: album.date,
+    year: album.year,
+    medium: album.medium,
+    description: album.description || '',
+    cover: album.cover
+  });
+  const artist = album.album_artist || album.artist || '';
+  const hasArtist = artist && artist !== album.name;
+  return `
+  <div class="timeline-item" data-album="${escapeHTML(payload)}">
+    <div class="cover-wrap">${coverHTML(album)}</div>
+    <div class="tl-name">${escapeHTML(album.name)}${hasArtist ? '<span style="color:var(--text-dim)"> · ' + escapeHTML(artist) + '</span>' : ''}</div>
+    <div class="tl-date">${escapeHTML(dateStr)}</div>
+  </div>`;
+}
+
 function renderFilters() {
   // ── 年份标签 ──
   const years = [...new Set(albums.map(a => a.year).filter(Boolean))].sort((a, b) => b - a);
@@ -343,7 +388,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal()
 
 // Delegate card clicks via data-album attribute
 document.addEventListener('click', e => {
-  const card = e.target.closest('.album-card');
+  const card = e.target.closest('.album-card, .timeline-item');
   if (!card) return;
   const raw = card.getAttribute('data-album');
   if (!raw) return;
@@ -362,6 +407,7 @@ document.querySelectorAll('.nav-tab').forEach(tab => {
     currentView = tab.dataset.view;
     document.getElementById(`panel-${currentView}`).classList.add('active');
     if (currentView === 'year') renderYearView();
+    else if (currentView === 'timeline') renderTimelineView();
     else renderGroupView();
   });
 });
