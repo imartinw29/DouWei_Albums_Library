@@ -328,6 +328,25 @@ function applyFilters(arr) {
   return filtered;
 }
 
+// Build star rating HTML: ★ full, ☆ half, ○ empty
+function renderStars(rating) {
+  if (rating == null || rating === 0) return '';
+  const num = parseFloat(rating);
+  if (isNaN(num)) return '';
+  let html = '<span class="modal-rating">';
+  for (let i = 1; i <= 5; i++) {
+    if (num >= i) {
+      html += '<span class="star full">★</span>';
+    } else if (num >= i - 0.5) {
+      html += '<span class="star half">★</span>';
+    } else {
+      html += '<span class="star empty">☆</span>';
+    }
+  }
+  html += `<span class="rating-num">${num.toFixed(1)}</span></span>`;
+  return html;
+}
+
 function openModal(album) {
   if (!album) return;
 
@@ -338,7 +357,9 @@ function openModal(album) {
     coverEl.innerHTML = placeholderHTML(album.year || 0, album.name);
   }
 
-  document.getElementById('modal-name').textContent = album.name || '';
+  const nameEl = document.getElementById('modal-name');
+  const ratingHTML = renderStars(album.rating);
+  nameEl.innerHTML = escapeHTML(album.name || '') + ratingHTML;
 
   // New reading-style meta: date · artist · medium
   const parts = [
@@ -360,6 +381,22 @@ function openModal(album) {
 
   const desc = (album.description || '').trim();
   document.getElementById('modal-desc').textContent = desc || '（暂无介绍）';
+
+  // Tracks panel
+  const tracksPanel = document.getElementById('modal-tracks-panel');
+  const tracksList = document.getElementById('modal-tracks-list');
+  if (album.tracks && album.tracks.length > 0) {
+    tracksPanel.style.display = 'flex';
+    tracksList.innerHTML = album.tracks.map(t => `
+      <div class="modal-track-item">
+        <span class="modal-track-no">${String(t.no || '').padStart(2, '0')}.</span>
+        <span class="modal-track-title">${escapeHTML(t.title || '')}</span>
+        ${t.duration ? `<span class="modal-track-duration">${escapeHTML(t.duration)}</span>` : ''}
+      </div>
+    `).join('');
+  } else {
+    tracksPanel.style.display = 'none';
+  }
 
   document.getElementById('modal').classList.add('open');
   document.body.classList.add('modal-open');
