@@ -280,6 +280,77 @@
 
   .albums-cta:hover .albums-cta-arrow { transform: translateX(6px); }
 
+  /* ── Recent 30 Days ── */
+  .recent {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 4.5rem 2rem 0.5rem;
+  }
+  .recent-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
+    margin-bottom: 2.2rem;
+  }
+  .recent-title {
+    font-size: 1.05rem;
+    letter-spacing: 0.18em;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .recent-sub {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+  }
+  .recent-row {
+    display: flex;
+    gap: 1.6rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: none;
+  }
+  .recent-row::-webkit-scrollbar { display: none; }
+  .recent-card {
+    flex: 0 0 auto;
+    width: 180px;
+    text-decoration: none;
+    color: inherit;
+    animation: rise-in both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 25%;
+  }
+  .recent-cover {
+    width: 180px;
+    height: 180px;
+    object-fit: cover;
+    border: 1px solid var(--border);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: block;
+  }
+  .recent-card:hover .recent-cover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 24px rgba(184,149,106,0.15);
+  }
+  .recent-name {
+    margin-top: 0.7rem;
+    font-size: 0.82rem;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .recent-date {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+    margin-top: 0.15rem;
+  }
+  @keyframes rise-in {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: none; }
+  }
+
   /* ── Footer ── */
   footer {
     text-align: center;
@@ -309,6 +380,7 @@
     <a href="#bio" class="nav-link">生平</a>
     <a href="#bands" class="nav-link">乐队演变</a>
     <a href="albums.html" class="nav-link">历年专辑</a>
+    <a href="fragment.html" class="nav-link">碎片</a>
   </div>
 </nav>
 
@@ -392,6 +464,15 @@
   </div>
 </section>
 
+<!-- Recent 30 Days -->
+<section class="recent" id="recent">
+  <div class="recent-head">
+    <span class="recent-title">最近发行</span>
+    <span class="recent-sub" id="recent-sub">最近 30 天</span>
+  </div>
+  <div class="recent-row" id="recent-row"></div>
+</section>
+
 <!-- Albums CTA -->
 <section class="section" style="padding-top: 0">
   <a href="albums.html" class="albums-cta">
@@ -412,6 +493,30 @@ fetch('albums.json')
     var count = data.length;
     document.getElementById('album-count-display').textContent =
       earliest.year + ' – ' + latest.year + ' · ' + count + ' 张专辑';
+
+    // 最近 30 天
+    var cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 30);
+    var recent = data.filter(function(a) {
+      return new Date(a.date) >= cutoff;
+    });
+    var row = document.getElementById('recent-row');
+    var sub = document.getElementById('recent-sub');
+    if (recent.length === 0) {
+      row.innerHTML = '<p style="color:var(--text-dim);font-size:0.8rem">近 30 天暂无新发行</p>';
+      return;
+    }
+    sub.textContent = '最近 30 天 · ' + recent.length + ' 张';
+    row.innerHTML = recent.map(function(a) {
+      var d = new Date(a.date);
+      var ds = d.getFullYear() + '-' +
+        String(d.getMonth() + 1).padStart(2, '0') + '-' +
+        String(d.getDate()).padStart(2, '0');
+      return '<a class="recent-card" href="albums.html" title="' + a.name + '">' +
+        '<img class="recent-cover" src="covers/' + a.cover + '" alt="' + a.name + '" loading="eager" decoding="async">' +
+        '<div class="recent-name">' + a.name + '</div>' +
+        '<div class="recent-date">' + ds + '</div></a>';
+    }).join('');
   })
   .catch(function() {});
 </script>

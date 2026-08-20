@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>碎片 · 窦唯</title>
+<style>
+  :root {
+    --bg: #090909;
+    --surface: #111;
+    --surface2: #181818;
+    --border: #242424;
+    --text: #e0ddd8;
+    --text-dim: #5a5a5a;
+    --text-mid: #888;
+    --accent: #b8956a;
+    --accent-light: #d4b48a;
+    --accent-dark: #7a6040;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Serif SC', 'Source Han Serif SC', 'STSong', serif;
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ── Navigation ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    background: rgba(9,9,9,0.88);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-inner {
+    max-width: 1200px;
+    width: 100%;
+    padding: 0 2rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+  }
+
+  .nav-logo {
+    font-size: 1rem;
+    color: var(--accent-light);
+    letter-spacing: 0.2em;
+    text-decoration: none;
+    margin-right: auto;
+  }
+
+  .nav-link {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    color: var(--text-mid);
+    text-decoration: none;
+    transition: color 0.15s;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid transparent;
+  }
+  .nav-link:hover { color: var(--text); border-bottom-color: var(--accent); }
+  .nav-link.active { color: var(--accent-light); }
+
+  /* ── Page Head ── */
+  .page-head {
+    padding: 7rem 2rem 3rem;
+    text-align: center;
+  }
+  .page-title {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 300;
+    letter-spacing: 0.5em;
+    text-indent: 0.5em;
+    color: var(--text);
+  }
+  .page-sub {
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    color: var(--text-dim);
+  }
+  .page-note {
+    max-width: 560px;
+    margin: 1.6rem auto 0;
+    font-size: 0.8rem;
+    line-height: 2;
+    color: var(--text-mid);
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Fragment Grid ── */
+  .fragments {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem 5rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem;
+  }
+
+  .fragment {
+    opacity: 0;
+    transform: translateY(28px);
+    animation: frag-in 0.9s ease forwards;
+  }
+  .fragment:nth-child(2) { animation-delay: 0.12s; }
+  .fragment:nth-child(3) { animation-delay: 0.24s; }
+  .fragment:nth-child(4) { animation-delay: 0.36s; }
+  .fragment:nth-child(5) { animation-delay: 0.48s; }
+  .fragment:nth-child(6) { animation-delay: 0.6s; }
+  .fragment:nth-child(7) { animation-delay: 0.72s; }
+
+  @keyframes frag-in {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .fragment-img {
+    width: 100%;
+    display: block;
+    border: 1px solid var(--border);
+    filter: grayscale(0.35) contrast(1.02);
+    transition: filter 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease;
+  }
+  .fragment:hover .fragment-img {
+    filter: grayscale(0) contrast(1);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 32px rgba(0,0,0,0.5);
+  }
+
+  .fragment-meta {
+    margin-top: 0.9rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+  }
+  .fragment-era {
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .fragment-caption {
+    font-size: 0.78rem;
+    color: var(--text-mid);
+    letter-spacing: 0.03em;
+  }
+
+  /* 首张横跨全宽 */
+  .fragment.wide {
+    grid-column: 1 / -1;
+  }
+  .fragment.wide .fragment-img {
+    max-height: 70vh;
+    object-fit: cover;
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+  }
+
+  @media (max-width: 768px) {
+    .nav-inner { gap: 1.2rem; padding: 0 1rem; }
+    .fragments { grid-template-columns: 1fr; gap: 2rem; padding: 0.5rem 1rem 4rem; }
+    .page-head { padding: 6rem 1rem 2.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">窦唯</a>
+    <a href="index.html" class="nav-link">首页</a>
+    <a href="albums.html" class="nav-link">专辑</a>
+    <a href="fragment.html" class="nav-link active">碎片</a>
+  </div>
+</nav>
+
+<header class="page-head">
+  <div class="page-title">碎 片</div>
+  <div class="page-sub">FRAGMENTS</div>
+  <p class="page-note">一个艺术家留下的，不是新闻标题，不是家庭关系，而是一些瞬间——舞台上纵身的时刻、录音棚里垂目的时刻、胡同里穿行的时刻。这里是窦唯自己的碎片，慢慢累积。</p>
+</header>
+
+<main class="fragments" id="fragments">
+  <!-- JS 渲染 -->
+</main>
+
+<footer>
+  <p>窦唯非官方展示站 · 资料整理自公开来源</p>
+</footer>
+
+<script>
+var FRAGMENTS = [
+  {
+    src: "photo/douwei-jumping-guitar.jpg",
+    era: "1980s末 — 1990s初",
+    caption: "黑豹时期 · 舞台上纵身一跃"
+  },
+  {
+    src: "photo/douwei-young-studio-pipe.jpg",
+    era: "1990s初",
+    caption: "录音棚 · 笛子与电吉他之间的青年"
+  },
+  {
+    src: "photo/douwei-1994-hongkan.jpg",
+    era: "1994",
+    caption: "红磡 · 中国摇滚乐的夜晚"
+  },
+  {
+    src: "photo/douwei-playing-guitar.jpg",
+    era: "1990s",
+    caption: "弹琴的人"
+  },
+  {
+    src: "photo/douwei-glasses-jacket.jpg",
+    era: "1990s中",
+    caption: "街头 · 向知识分子气质的转变"
+  },
+  {
+    src: "photo/douwei-recording.jpg",
+    era: "2000s — 2010s",
+    caption: "录音棚 · 垂目，专注"
+  },
+  {
+    src: "photo/douwei-smile-cigar006.jpg",
+    era: "中年",
+    caption: "暗影中 · 一支烟的时间"
+  }
+];
+
+(function() {
+  var wrap = document.getElementById('fragments');
+  var html = FRAGMENTS.map(function(f, i) {
+    return '<figure class="fragment' + (i === 0 ? ' wide' : '') + '">' +
+      '<img class="fragment-img" src="' + f.src + '" alt="' + f.caption + '" loading="lazy" decoding="async">' +
+      '<figcaption class="fragment-meta">' +
+        '<span class="fragment-era">' + f.era + '</span>' +
+        '<span class="fragment-caption">' + f.caption + '</span>' +
+      '</figcaption></figure>';
+  }).join('');
+  wrap.innerHTML = html;
+})();
+</script>
+
+</body>
+</html>
