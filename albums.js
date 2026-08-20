@@ -77,7 +77,9 @@ function cardHTML(album) {
     year: album.year,
     medium: album.medium,
     description: album.description || '',
-    cover: album.cover
+    cover: album.cover,
+    rating: album.rating,
+    tracks: album.tracks || []
   });
   const artist = album.album_artist || album.artist || '';
   const hasArtist = artist && artist !== album.name;
@@ -255,7 +257,9 @@ function timelineItemHTML(album) {
     year: album.year,
     medium: album.medium,
     description: album.description || '',
-    cover: album.cover
+    cover: album.cover,
+    rating: album.rating,
+    tracks: album.tracks || []
   });
   const artist = album.album_artist || album.artist || '';
   const hasArtist = artist && artist !== album.name;
