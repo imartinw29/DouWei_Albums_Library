@@ -332,16 +332,18 @@ function applyFilters(arr) {
   return filtered;
 }
 
-// Build star rating HTML: ★ full, ☆ half, ○ empty
+// Build star rating HTML: 10分制，每2分一颗星。★ full, half(半实半虚), ○ empty
 function renderStars(rating) {
   if (rating == null || rating === 0) return '';
   const num = parseFloat(rating);
   if (isNaN(num)) return '';
   let html = '<span class="modal-rating">';
   for (let i = 1; i <= 5; i++) {
-    if (num >= i) {
+    // 每颗星代表 2 分：第 i 颗星满星需要 num >= i*2
+    if (num >= i * 2) {
       html += '<span class="star full">★</span>';
-    } else if (num >= i - 0.5) {
+    } else if (num >= (i - 1) * 2 + 0.01) {
+      // 超过了前一颗星，但没到本颗星满分 → 半实半虚
       html += '<span class="star half">★</span>';
     } else {
       html += '<span class="star empty">☆</span>';
