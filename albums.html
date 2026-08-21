@@ -709,6 +709,9 @@
    background-image: url('stars.png');
    background-size: 300% 100%;  /* 三帧横排 */
    background-repeat: no-repeat;
+   font-size: 0;          /* 隐藏 JS 生成的 ★/☆ 字符, 只显示背景图 */
+   line-height: 0;
+   overflow: hidden;
  }
  .modal-rating .star.empty { background-position: 0 0; }
  .modal-rating .star.half { background-position: 50% 0; }
