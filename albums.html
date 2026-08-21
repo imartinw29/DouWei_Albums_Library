@@ -706,16 +706,13 @@
    height: 0.9em;
    vertical-align: middle;
    margin-right: 1px;
+   background-image: url('stars.png');
+   background-size: 300% 100%;  /* 三帧横排 */
+   background-repeat: no-repeat;
  }
- .modal-rating .star.full { color: var(--accent); }
- .modal-rating .star.half {
-   background: linear-gradient(90deg, var(--accent) 50%, var(--text-dim) 50%);
-   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z'/%3E%3C/svg%3E") no-repeat center;
-   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z'/%3E%3C/svg%3E") no-repeat center;
-   -webkit-mask-size: contain;
-   mask-size: contain;
- }
- .modal-rating .star.empty { color: var(--text-dim); }
+ .modal-rating .star.empty { background-position: 0 0; }
+ .modal-rating .star.half { background-position: 50% 0; }
+ .modal-rating .star.full { background-position: 100% 0; }
  .modal-rating .rating-num {
    color: var(--text-mid);
    margin-left: 0.3rem;
