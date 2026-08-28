@@ -65,8 +65,9 @@
 
 .logo {
   display: flex;
-  flex-direction: column;
-  gap: 0.18rem;
+  align-items: center;
+  gap: 1rem;
+  flex: 0 0 auto;
 }
 
 .logo-line {
@@ -76,12 +77,16 @@
 }
 
 .logo-home {
-  display: inline-block;
-  font-size: 1.1rem;
-  color: var(--text-dim);
+  display: inline-flex;
+  align-items: center;
+  height: 2rem;
+  padding-right: 1rem;
+  border-right: 1px solid var(--border-strong);
+  font-size: 0.78rem;
+  color: var(--text-soft);
   text-decoration: none;
   transition: color 0.15s ease;
-  margin-bottom: 0.15rem;
+  white-space: nowrap;
 }
 
 .logo-home:hover { color: var(--accent-light); }
@@ -103,11 +108,17 @@
  .nav-tabs {
    display: flex;
    gap: 0;
+   flex: 0 1 auto;
+   max-width: min(100%, 720px);
    border: 1px solid var(--border-strong);
    border-radius: 999px;
-   overflow: hidden;
+   overflow-x: auto;
+   overflow-y: hidden;
    background: rgba(17,16,14,0.72);
+   scrollbar-width: none;
  }
+
+ .nav-tabs::-webkit-scrollbar { display: none; }
 
  .nav-tab {
    padding: 0.5rem 1.25rem;
@@ -909,6 +920,19 @@
  /* ── Responsive ── */
  @media (max-width: 900px) {
    header, .hero-shell, .main, .page-footer { padding-left: 1.2rem; padding-right: 1.2rem; }
+   .header-inner {
+     height: auto;
+     padding: 0.8rem 0;
+     flex-direction: column;
+     align-items: stretch;
+     gap: 0.7rem;
+   }
+   .logo { gap: 0.7rem; }
+   .logo-line { min-width: 0; gap: 0.65rem; }
+   .logo-name, .logo-sub { white-space: nowrap; }
+   .logo-name { font-size: 1.45rem; }
+   .logo-sub { overflow: hidden; text-overflow: ellipsis; }
+   .nav-tabs { max-width: none; width: 100%; align-self: stretch; }
    .modal {
      grid-template-columns: 1fr;
      height: auto;
@@ -951,11 +975,7 @@
 <header>
   <div class="header-inner">
     <div class="logo">
-      <a href="index.html" class="logo-home" aria-label="返回首页">←</a>
-      <div class="logo-line">
-        <span class="logo-name">窦唯</span>
-        <span class="logo-sub">专辑档案 · 1994—2026</span>
-      </div>
+      <a href="index.html" class="logo-home" aria-label="返回首页">首页</a>
     </div>
     <nav class="nav-tabs">
       <button class="nav-tab active" data-view="year">按年份</button>
