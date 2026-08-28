@@ -399,8 +399,7 @@ function openModal(album) {
     tracksList.innerHTML = album.tracks.map(t => `
       <div class="modal-track-item">
         ${t.no ? `<span class="modal-track-no">${String(t.no).padStart(2, '0')}.</span>` : ''}
-        <span class="modal-track-title">${escapeHTML(t.title || '')}</span>
-        ${t.duration ? `<span class="modal-track-duration">${escapeHTML(t.duration)}</span>` : ''}
+        <span class="modal-track-title">${escapeHTML(t.title || '')}${t.duration ? ` ${escapeHTML(t.duration)}` : ''}</span>
       </div>
     `).join('');
   } else {
