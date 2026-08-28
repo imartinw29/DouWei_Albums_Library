@@ -76,6 +76,7 @@ function cardHTML(album) {
     date: album.date,
     year: album.year,
     medium: album.medium,
+    type: album.type,
     description: album.description || '',
     cover: album.cover,
     rating: album.rating,
@@ -256,6 +257,7 @@ function timelineItemHTML(album) {
     date: album.date,
     year: album.year,
     medium: album.medium,
+    type: album.type,
     description: album.description || '',
     cover: album.cover,
     rating: album.rating,
@@ -371,6 +373,7 @@ function openModal(album) {
   const parts = [
     album.date ? escapeHTML(album.date) : '',
     (album.album_artist || album.artist) ? escapeHTML(album.album_artist || album.artist) : '',
+    album.type ? escapeHTML(album.type) : '',
     album.medium ? escapeHTML(mediumLabel(album.medium)) : ''
   ].filter(Boolean);
 
@@ -395,7 +398,7 @@ function openModal(album) {
     tracksPanel.style.display = 'flex';
     tracksList.innerHTML = album.tracks.map(t => `
       <div class="modal-track-item">
-        <span class="modal-track-no">${String(t.no || '').padStart(2, '0')}.</span>
+        ${t.no ? `<span class="modal-track-no">${String(t.no).padStart(2, '0')}.</span>` : ''}
         <span class="modal-track-title">${escapeHTML(t.title || '')}</span>
         ${t.duration ? `<span class="modal-track-duration">${escapeHTML(t.duration)}</span>` : ''}
       </div>
