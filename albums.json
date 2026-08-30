@@ -1,5 +1,23 @@
 [
   {
+    "name": "凉风至赋",
+    "artist": "窦唯; 朝简",
+    "album_artist": "朝简",
+    "date": "2026-08-29",
+    "year": 2026,
+    "medium": "D",
+    "type": "专辑",
+    "description": "凉风至赋\n制作人：窦唯\n录音/混音/制作执行：文大可\n氛围吉它：文大可\n吹管乐：子枫\n人声：窦唯\n母带处理：陈林\n\n唐·王棨《凉风至赋》",
+    "cover": "cover_2026_凉风至赋.jpg",
+    "tracks": [
+      {
+        "no": 1,
+        "title": "凉风至赋",
+        "duration": "11:38"
+      }
+    ]
+  },
+  {
     "name": "秋河赋",
     "artist": "窦唯; 朝简",
     "album_artist": "朝简",
