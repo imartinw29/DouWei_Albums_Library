@@ -20,8 +20,15 @@ document.addEventListener('error',e=>{
   if (img.dataset.original && img.getAttribute('src')!==img.dataset.original) {img.src=img.dataset.original;return;}
   const text=document.createElement('span');text.className='image-missing';text.textContent='封面暂未载入';img.replaceWith(text);
 },true);
+function rating(a,detail=false) {
+  const raw=a.rating, num=typeof raw==='number'||typeof raw==='string'&&raw.trim()!==''?Number(raw):NaN;
+  const valid=Number.isFinite(num)&&num>=0&&num<=10;
+  if(!valid&&!detail)return '';
+  const stars=Array.from({length:5},(_,i)=>`<span class="star ${valid&&num>=(i+1)*2?'full':valid&&num>=i*2+0.01?'half':'empty'}"></span>`).join('');
+  return `<div class="work-rating${valid?'':' unrated'}" role="img" aria-label="${valid?'豆瓣评分 '+num.toFixed(1)+' 分，满分 10 分':'暂无评分'}">${detail&&valid?'<span class="rating-source">豆瓣评分</span>':''}<span class="rating-stars" aria-hidden="true">${stars}</span>${valid?`<span class="rating-num">${num.toFixed(1)}</span>`:'<span class="rating-empty">暂无评分</span>'}</div>`;
+}
 function card(a,i=0) {
-  return `<a class="work-card" href="${esc(url(a))}" aria-label="查看《${esc(a.name)}》"><div class="cover-box">${image(a,{eager:i<4})}<span class="cover-enter" aria-hidden="true">查看作品 ↗</span></div><div class="card-caption"><h3>${esc(a.name)}</h3><span class="card-year">${date(a)}</span><p>${esc(a.group)}</p></div></a>`;
+  return `<a class="work-card" href="${esc(url(a))}" aria-label="查看《${esc(a.name)}》"><div class="cover-box">${image(a,{eager:i<4})}<span class="cover-enter" aria-hidden="true">查看作品 ↗</span></div><div class="card-caption"><h3>${esc(a.name)}</h3><span class="card-year">${date(a)}</span><p>${esc(a.group)}</p>${rating(a)}</div></a>`;
 }
 function home() {
   const s=summary(albums), latest=albums[0];
@@ -83,7 +90,7 @@ function detail() {
   let back='works.html';
   if(saved){const target=new URL(saved,location.href);if(target.origin===location.origin&&target.pathname===new URL('works.html',location.href).pathname){target.searchParams.set('restore','1');back=target.pathname+target.search;}}
   const i=albums.indexOf(a), earlier=albums[i+1], later=albums[i-1];
-  main.innerHTML=`<div class="detail-nav section-wrap"><a class="text-link" data-back href="${esc(back)}">← 返回作品展</a><span class="serial">${a.year} / ${esc(a.group)}</span></div><article class="work-detail section-wrap"><div class="detail-art"><button class="detail-cover" type="button" aria-label="放大《${esc(a.name)}》封面">${image(a,{eager:true,full:true})}<span>查看完整封面 ↗</span></button><p class="art-note">原始封面 · 保留原貌</p></div><div class="detail-copy"><p class="eyebrow">${esc(a.type||'作品')} / ${date(a)}</p><h1>${esc(a.name)}</h1><p class="detail-artist">${esc(a.group)}</p><dl class="metadata"><div><dt>发行日期</dt><dd>${date(a)}</dd></div><div><dt>发行介质</dt><dd>${esc(medium(a.medium))}</dd></div>${a.artist&&a.artist!==a.group?`<div><dt>参与艺术家</dt><dd>${esc(a.artist)}</dd></div>`:''}</dl>
+  main.innerHTML=`<div class="detail-nav section-wrap"><a class="text-link" data-back href="${esc(back)}">← 返回作品展</a><span class="serial">${a.year} / ${esc(a.group)}</span></div><article class="work-detail section-wrap"><div class="detail-art"><button class="detail-cover" type="button" aria-label="放大《${esc(a.name)}》封面">${image(a,{eager:true,full:true})}<span>查看完整封面 ↗</span></button><p class="art-note">原始封面 · 保留原貌</p></div><div class="detail-copy"><p class="eyebrow">${esc(a.type||'作品')} / ${date(a)}</p><h1>${esc(a.name)}</h1><p class="detail-artist">${esc(a.group)}</p>${rating(a,true)}<dl class="metadata"><div><dt>发行日期</dt><dd>${date(a)}</dd></div><div><dt>发行介质</dt><dd>${esc(medium(a.medium))}</dd></div>${a.artist&&a.artist!==a.group?`<div><dt>参与艺术家</dt><dd>${esc(a.artist)}</dd></div>`:''}</dl>
       ${a.tracks.length?`<section class="track-section"><div class="minor-heading"><h2>曲目</h2><span>${a.tracks.length} TRACK${a.tracks.length===1?'':'S'}</span></div><ol class="track-list">${a.tracks.map((t,n)=>`<li><span class="track-no">${esc(t.no??n+1).padStart(2,'0')}</span><span class="track-title">${esc(t.title||'未注明曲名')}</span><time>${esc(t.duration||'—')}</time></li>`).join('')}</ol></section>`:'<p class="small-note">曲目资料尚未收录。</p>'}
       ${a.description?.trim()?`<section class="credits"><div class="minor-heading"><h2>作品资料</h2><span>NOTES & CREDITS</span></div><div class="credits-text">${esc(a.description.trim())}</div></section>`:''}<p class="source-note">以上按现有作品档案整理。原始介绍的具体出处尚待逐条核对；未补写未经证实的创作故事。</p></div></article>
       <nav class="adjacent section-wrap" aria-label="相邻发行作品">${earlier?`<a href="${esc(url(earlier))}"><span>← 较早收录的发行</span><h2>${esc(earlier.name)}</h2><p>${date(earlier)}</p></a>`:'<div></div>'}${later?`<a href="${esc(url(later))}"><span>较晚收录的发行 →</span><h2>${esc(later.name)}</h2><p>${date(later)}</p></a>`:'<div></div>'}</nav>
