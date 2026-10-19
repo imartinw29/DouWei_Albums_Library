@@ -46,7 +46,7 @@ function home() {
       const items=ascending.filter(a=>a.year>=d&&a.year<d+10), a=items[0];
       return `<a class="decade" href="works.html?${new URLSearchParams({year:String(d)+'s',sort:'asc'})}"><div class="decade-head"><h3>${d}<small>s</small></h3><span>${items.length} 部作品 ↗</span></div><div class="decade-image">${image(a)}</div><p>${esc(a.name)} <span>${a.year}</span></p></a>`;
     }).join('')}</div><p class="small-note">年代入口以该年代最早收录的作品为封面；数量按当前档案统计。</p></section>
-    <section class="about section-wrap" id="about"><div><span class="eyebrow">03 / ABOUT THIS GALLERY</span><h2>为曾经出现的作品，<br>留一个位置。</h2></div><div class="about-body"><p>这份整理始于一个朴素的念头：趁作品和资料还找得到，把它们认真记下来。不等许多年后，再从零散的线索里寻找。</p><p>这里展示封面、曲目与发行资料。它不是一部完整的音乐史，也不替作品作解释。资料足够的地方，记得细一些；尚未核实的地方，留白。</p><p class="about-boundary">非官方、非商业的作品展示。本站不提供音频、试听、下载或流媒体跳转。封面与原始作品介绍的权利归相应权利人；署名说明不替代授权。</p><p class="small-note">整理范围以现有收录为准，不宣称涵盖全部作品。资料出处仍在逐步核对。</p></div></section>`;
+    <section class="about section-wrap" id="about"><div><span class="eyebrow">03 / ABOUT THIS GALLERY</span><h2>记录窦唯历年<br>公开发行的作品。</h2></div><div class="about-body"><p>未能尽数收录，亦无所憾。</p><p>许多作品没有说明、评分或歌词，我们也无从得知创作的动机与背后的故事。也许听众能得到的，本就只有作品本身。这里不替那些留白作解释。</p><p>这些年，作品仍在陆续发布，发布的地方却未必固定。能在每次发布时记下一笔，就不必等若干年后，再去零散的网址里寻找当初的线索。</p><p class="about-boundary">本页面为非官方、非商业性的作品展示，不提供音频、试听、下载或流媒体跳转。封面与原始作品介绍的权利归相应权利人。</p></div></section>`;
 }
 function works() {
   const s=summary(albums), params=new URLSearchParams(location.search);
