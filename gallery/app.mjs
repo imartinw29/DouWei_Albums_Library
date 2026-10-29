@@ -3,7 +3,7 @@ const main=document.querySelector('main');
 const page=document.body.dataset.page;
 let albums=[];
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const url=a=>'work.html?'+new URLSearchParams({id:a.id});
+const url=a=>'work.html?'+new URLSearchParams({id:a.short||a.id});
 const medium=v=>({D:'数字发行',CD:'CD',LP:'黑胶',DVD:'DVD',DLT:'数字录音带','磁带':'磁带'}[v]||v||'未注明');
 const date=a=>a.date.replaceAll('-','.');
 const storage={get(k){try{return sessionStorage.getItem(k);}catch{return null;}},set(k,v){try{sessionStorage.setItem(k,v);}catch{/* Storage is optional. */}}};
@@ -38,7 +38,7 @@ function home() {
   const decades=[...new Set(ascending.map(a=>Math.floor(a.year/10)*10))];
   main.innerHTML=`
     <section class="home-hero section-wrap">
-      <div class="hero-intro"><p class="eyebrow">非官方作品档案 <span> / </span> DOU WEI GALLERY</p><h1>窦唯<span>作品展</span></h1><p class="hero-note">沿着时间，看作品不断留下来。</p><a class="text-link hero-link" href="works.html?sort=asc">从最初的作品开始 <span>↗</span></a><button type="button" class="text-link hero-share" data-share-open>分享本站 ↗</button><div class="hero-meta"><span>${s.first} — ${s.last}</span><span>已收录 <b data-count>${s.count}</b> 部作品</span></div></div>
+      <div class="hero-intro"><p class="eyebrow">非官方作品档案 <span> / </span> DOU WEI GALLERY</p><h1>窦唯<span>作品展</span></h1><p class="hero-note">沿着时间，看作品不断留下来。</p><a class="text-link hero-link" href="works.html?sort=asc">从最初的作品开始 <span>↗</span></a><div class="hero-meta"><span>${s.first} — ${s.last}</span><span>已收录 <b data-count>${s.count}</b> 部作品</span></div></div>
       <figure class="feature"><div class="feature-label"><span class="eyebrow">最新发行</span><span class="serial">${date(latest)}</span></div><a class="feature-link" href="${esc(url(latest))}"><div class="feature-cover">${image(latest,{eager:true})}</div><figcaption><div><h2 data-latest>${esc(latest.name)}</h2><p>${esc(latest.group)} · ${esc(latest.type||'作品')} · ${esc(medium(latest.medium))}</p></div><span class="feature-arrow" aria-hidden="true">↗</span></figcaption></a></figure>
     </section>
     <section class="recent section-wrap" aria-labelledby="recent-title"><div class="section-heading"><div><span class="eyebrow">01 / RECENT RELEASES</span><h2 id="recent-title">近作</h2></div><a class="text-link" href="works.html?sort=desc">查看全部作品 ↗</a></div><div class="recent-grid">${recent.map(card).join('')}</div></section>
@@ -83,20 +83,21 @@ function works() {
   if(params.get('restore')==='1'){const y=Number(storage.get('dw-gallery-scroll')||0);requestAnimationFrame(()=>scrollTo(0,y));}
 }
 function detail() {
-  const id=new URLSearchParams(location.search).get('id'), a=albums.find(a=>a.id===id);
-  if(!a){main.innerHTML='<section class="empty-state"><p class="eyebrow">WORK NOT FOUND</p><h1>未找到这部作品</h1><p>地址可能不完整，或资料已经更正。</p><a class="text-link" href="works.html">返回全部作品 ↗</a></section>';return;}
+  const id=new URLSearchParams(location.search).get('id'), a=albums.find(a=>a.short===id||a.id===id);
+  if(!a){main.innerHTML='<section class="empty-state"><p class="eyebrow">WORK NOT FOUND</p><h1>该详情页面已失效</h1><p>作品资料可能已更正，请回到主页检索。</p><a class="text-link" href="index.html">返回作品展首页 ↗</a></section>';return;}
   document.title=a.name+' · 窦唯作品展';
   const saved=storage.get('dw-gallery-return');
   let back='works.html';
   if(saved){const target=new URL(saved,location.href);if(target.origin===location.origin&&target.pathname===new URL('works.html',location.href).pathname){target.searchParams.set('restore','1');back=target.pathname+target.search;}}
   const i=albums.indexOf(a), earlier=albums[i+1], later=albums[i-1];
-  main.innerHTML=`<div class="detail-nav section-wrap"><a class="text-link" data-back href="${esc(back)}">← 返回作品展</a><span class="serial">${a.year} / ${esc(a.group)}</span></div><article class="work-detail section-wrap"><div class="detail-art"><button class="detail-cover" type="button" aria-label="放大《${esc(a.name)}》封面">${image(a,{eager:true,full:true})}<span>查看完整封面 ↗</span></button><p class="art-note">原始封面 · 保留原貌</p></div><div class="detail-copy"><p class="eyebrow">${esc(a.type||'作品')} / ${date(a)}</p><h1>${esc(a.name)}</h1><p class="detail-artist">${esc(a.group)}</p>${rating(a,true)}<dl class="metadata"><div><dt>发行日期</dt><dd>${date(a)}</dd></div><div><dt>发行介质</dt><dd>${esc(medium(a.medium))}</dd></div>${a.artist&&a.artist!==a.group?`<div><dt>参与艺术家</dt><dd>${esc(a.artist)}</dd></div>`:''}</dl>
+  main.innerHTML=`<div class="detail-nav section-wrap"><a class="text-link" data-back href="${esc(back)}">← 返回作品展</a><span class="serial">${a.year} / ${esc(a.group)}</span></div><article class="work-detail section-wrap"><div class="detail-art"><button class="detail-cover" type="button" aria-label="放大《${esc(a.name)}》封面">${image(a,{eager:true,full:true})}<span>查看完整封面 ↗</span></button><p class="art-note">原始封面 · 保留原貌</p></div><div class="detail-copy"><p class="eyebrow">${esc(a.type||'作品')} / ${date(a)}</p><div class="detail-title-row"><h1>${esc(a.name)}</h1><button type="button" class="album-share" aria-label="分享本专辑" title="分享本专辑"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="2"/><circle cx="6" cy="12" r="2"/><circle cx="18" cy="19" r="2"/><path d="m8 11 8-5m-8 7 8 5"/></svg><span>分享</span></button></div><p class="detail-artist">${esc(a.group)}</p>${rating(a,true)}<dl class="metadata"><div><dt>发行日期</dt><dd>${date(a)}</dd></div><div><dt>发行介质</dt><dd>${esc(medium(a.medium))}</dd></div>${a.artist&&a.artist!==a.group?`<div><dt>参与艺术家</dt><dd>${esc(a.artist)}</dd></div>`:''}</dl>
       ${a.tracks.length?`<section class="track-section"><div class="minor-heading"><h2>曲目</h2><span>${a.tracks.length} TRACK${a.tracks.length===1?'':'S'}</span></div><ol class="track-list">${a.tracks.map((t,n)=>`<li><span class="track-no">${esc(t.no??n+1).padStart(2,'0')}</span><span class="track-title">${esc(t.title||'未注明曲名')}</span><time>${esc(t.duration||'—')}</time></li>`).join('')}</ol></section>`:'<p class="small-note">曲目资料尚未收录。</p>'}
       ${a.description?.trim()?`<section class="credits"><div class="minor-heading"><h2>作品资料</h2><span>NOTES & CREDITS</span></div><div class="credits-text">${esc(a.description.trim())}</div></section>`:''}<p class="source-note">以上按现有作品档案整理。原始介绍的具体出处尚待逐条核对；未补写未经证实的创作故事。</p></div></article>
       <nav class="adjacent section-wrap" aria-label="相邻发行作品">${earlier?`<a href="${esc(url(earlier))}"><span>← 较早收录的发行</span><h2>${esc(earlier.name)}</h2><p>${date(earlier)}</p></a>`:'<div></div>'}${later?`<a href="${esc(url(later))}"><span>较晚收录的发行 →</span><h2>${esc(later.name)}</h2><p>${date(later)}</p></a>`:'<div></div>'}</nav>
       <dialog class="lightbox" aria-label="完整封面"><button class="lightbox-close" type="button" aria-label="关闭封面">关闭 ×</button>${image(a,{full:true})}<p>${esc(a.name)}</p></dialog>`;
   const dialog=main.querySelector('dialog');
   main.querySelector('.detail-cover').addEventListener('click',()=>{dialog.showModal();document.body.classList.add('lightbox-open');});
+  main.querySelector('.album-share').addEventListener('click',()=>document.dispatchEvent(new CustomEvent('gallery:share-album',{detail:a})));
   main.querySelector('.lightbox-close').addEventListener('click',()=>dialog.close());
   dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close();});
   dialog.addEventListener('close',()=>document.body.classList.remove('lightbox-open'));
