@@ -42,11 +42,24 @@ function home() {
       <figure class="feature"><div class="feature-label"><span class="eyebrow">最新发行</span><span class="serial">${date(latest)}</span></div><a class="feature-link" href="${esc(url(latest))}"><div class="feature-cover">${image(latest,{eager:true})}</div><figcaption><div><h2 data-latest>${esc(latest.name)}</h2><p>${esc(latest.group)} · ${esc(latest.type||'作品')} · ${esc(medium(latest.medium))}</p></div><span class="feature-arrow" aria-hidden="true">↗</span></figcaption></a></figure>
     </section>
     <section class="recent section-wrap" aria-labelledby="recent-title"><div class="section-heading"><div><span class="eyebrow">01 / RECENT RELEASES</span><h2 id="recent-title">近作</h2></div><a class="text-link" href="works.html?sort=desc">查看全部作品 ↗</a></div><div class="recent-grid">${recent.map(card).join('')}</div></section>
-    <section class="time-exhibit section-wrap" aria-labelledby="time-title"><div class="section-heading"><div><span class="eyebrow">02 / THROUGH THE YEARS</span><h2 id="time-title">时间里的作品</h2></div><p class="section-note">从一张，走向下一张。<br>按年代进入，不为作品排座次。</p></div><div class="decades">${decades.map(d=>{
+    <section class="time-exhibit section-wrap" aria-labelledby="time-title"><div class="section-heading"><div><span class="eyebrow">02 / THROUGH THE YEARS</span><div class="time-title-row"><h2 id="time-title">往年作品</h2><button type="button" class="album-share decade-refresh" data-refresh-decades><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7h-5m5 0V2M4 17h5m-5 0v5"/><path d="M20 7a8 8 0 0 0-14-2M4 17a8 8 0 0 0 14 2"/></svg><span>换一批</span></button></div></div><p class="section-note">每个年代，随手翻一张。</p></div><div class="decades">${decades.map(d=>{
       const items=ascending.filter(a=>a.year>=d&&a.year<d+10), a=items[0];
       return `<a class="decade" href="works.html?${new URLSearchParams({year:String(d)+'s',sort:'asc'})}"><div class="decade-head"><h3>${d}<small>s</small></h3><span>${items.length} 部作品 ↗</span></div><div class="decade-image">${image(a)}</div><p>${esc(a.name)} <span>${a.year}</span></p></a>`;
-    }).join('')}</div><p class="small-note">年代入口以该年代最早收录的作品为封面；数量按当前档案统计。</p></section>
+    }).join('')}</div><p class="small-note">年代封面可点击「换一批」随机切换；数量按当前档案统计。</p></section>
     <section class="about section-wrap" id="about"><div><span class="eyebrow">03 / ABOUT THIS GALLERY</span><h2>记录窦唯历年<br>公开发行的作品。</h2></div><div class="about-body"><p>未能尽数收录，亦无所憾。</p><p>许多作品没有说明、评分或歌词，我们也无从得知创作的动机与背后的故事。也许听众能得到的，本就只有作品本身。这里不替那些留白作解释。</p><p>这些年，作品仍在陆续发布，发布的地方却未必固定。能在每次发布时记下一笔，就不必等若干年后，再去零散的网址里寻找当初的线索。</p><p class="about-boundary">本页面为非官方、非商业性的作品展示，不提供音频、试听、下载或流媒体跳转。封面与原始作品介绍的权利归相应权利人。</p></div></section>`;
+  const decadeItems=decades.map(d=>ascending.filter(a=>a.year>=d&&a.year<d+10));
+  const displayed=decadeItems.map(items=>items[0]);
+  const decadeCards=main.querySelectorAll('.decade');
+  main.querySelector('[data-refresh-decades]').addEventListener('click',()=>{
+    decadeItems.forEach((items,i)=>{
+      const choices=items.filter(a=>a.id!==displayed[i].id);
+      if(!choices.length)return;
+      const a=choices[Math.floor(Math.random()*choices.length)];
+      displayed[i]=a;
+      decadeCards[i].querySelector('.decade-image').innerHTML=image(a,{eager:true});
+      decadeCards[i].querySelector('p').innerHTML=`${esc(a.name)} <span>${a.year}</span>`;
+    });
+  });
 }
 function works() {
   const s=summary(albums), params=new URLSearchParams(location.search);
