@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parent.parent
 PUBLIC = {
     '/albums.json', '/gallery/index.html', '/gallery/works.html',
     '/gallery/work.html', '/gallery/app.mjs', '/gallery/data.mjs',
-    '/gallery/share.mjs', '/gallery/share-qr.png',
+    '/gallery/share.mjs', '/gallery/counter.mjs', '/gallery/share-qr.png',
     '/gallery/vendor/qrcode.mjs',
     '/gallery/gallery.css', '/gallery/fonts/gallery-serif.woff2',
     '/gallery/fonts/OFL.txt', '/photo/douwei-recording.jpg', '/photo/douwei-stage-share.jpg',

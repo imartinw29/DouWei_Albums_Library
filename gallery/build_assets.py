@@ -40,7 +40,8 @@ def main():
     if args.font_source:
         from fontTools import subset
         from fontTools.ttLib import TTFont
-        text = ''.join(a['name'] for a in data)
+        # Cover all public data strings, including artists, tracks and descriptions.
+        text = json.dumps(data, ensure_ascii=False)
         text += ''.join(p.read_text() for p in HERE.iterdir() if p.suffix in {'.html', '.mjs'})
         text += ''.join(chr(n) for n in range(32, 127))
         font = TTFont(args.font_source)

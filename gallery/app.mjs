@@ -1,3 +1,4 @@
+import './counter.mjs';
 import {prepare, summary, selectWorks} from './data.mjs';
 const main=document.querySelector('main');
 const page=document.body.dataset.page;
