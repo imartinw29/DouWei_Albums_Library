@@ -13,7 +13,7 @@ PUBLIC = {
     '/gallery/share.mjs', '/gallery/share-qr.png',
     '/gallery/vendor/qrcode.mjs',
     '/gallery/gallery.css', '/gallery/fonts/gallery-serif.woff2',
-    '/gallery/fonts/OFL.txt',
+    '/gallery/fonts/OFL.txt', '/photo/douwei-recording.jpg',
 }
 
 class Handler(SimpleHTTPRequestHandler):

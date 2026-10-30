@@ -1,9 +1,10 @@
 """End-to-end share-card checks. Run with the local preview server on port 45031."""
 import asyncio
+import os
 from pathlib import Path
 from playwright.async_api import async_playwright
 
-BASE='http://127.0.0.1:45031/gallery/'
+BASE=os.environ.get('GALLERY_TEST_BASE','http://127.0.0.1:45031/gallery/')
 CANONICAL='https://imartinw29.github.io/DouWei_Albums_Library/gallery/'
 
 async def main():
@@ -47,6 +48,17 @@ async def main():
         download=await download_info.value
         assert download.suggested_filename.endswith('.png')
         assert Path(await download.path()).read_bytes().startswith(b'\x89PNG\r\n\x1a\n')
+        await download.save_as(str(Path.home()/'.hermes/cache/scratch/douwei-site-share-preview.png'))
+        site=await page.evaluate('''() => {
+          const canvas=document.createElement('canvas');canvas.width=900;canvas.height=1200;
+          const ctx=canvas.getContext('2d');ctx.drawImage(document.querySelector('.share-card-image'),0,0);
+          const pixel=(x,y)=>Array.from(ctx.getImageData(x,y,1,1).data).slice(0,3);
+          return {text:window.__shareText, corners:[[350,830],[549,1029]].map(([x,y])=>pixel(x,y)), outside:pixel(349,830)};
+        }''')
+        assert all(p==[255,253,248] for p in site['corners']),site
+        assert max(site['outside'])<60,site  # Dim portrait outside the opaque QR square.
+        for label,y in [('扫码进入作品展',1058),('imartinw29.github.io/DouWei_Albums_Library/gallery/',1102)]:
+            assert any(t['text']==label and t['align']=='center' and t['x']==450 and t['y']==y for t in site['text']),label
         await page.goto(BASE+'work.html?id=2026-10-24%7C%E7%A7%8B%E5%85%B4%E8%B5%8B%7C%E6%9C%9D%E7%AE%80',wait_until='networkidle')
         await page.get_by_role('button',name='分享本专辑').click()
         await page.wait_for_function("document.querySelector('.share-card-image')?.naturalWidth>0")
@@ -72,7 +84,11 @@ async def main():
         assert abs((x1+x2)/2-747)<=2,geometry['rect']
         for label in ('《秋兴赋》','2026.10.24  /  朝简'):
             assert any(t['text']==label and t['align']=='center' and t['x']==450 for t in geometry['text']),label
-        assert any(t['text']=='imartinw29.github.io/DouWei_Albums_Library/gallery/' for t in geometry['text'])
+        for label,y in [('imartinw29.github.io/DouWei_Albums_Library/gallery/',1102),('非官方整理 · 不提供音频或下载',1131)]:
+            assert any(t['text']==label and t['align']=='center' and t['x']==450 and t['y']==y for t in geometry['text']),label
+        async with page.expect_download() as album_download_info:
+            await page.get_by_role('link',name='保存名片 PNG').click()
+        await (await album_download_info.value).save_as(str(Path.home()/'.hermes/cache/scratch/douwei-album-share-preview.png'))
         assert any(t['text']=='扫码查看本专辑' and t['align']=='center' and t['x']==747 for t in geometry['text'])
         share_link=await page.locator('.share-link a').inner_text()
         assert 'id=' in share_link and len(share_link)<100,share_link

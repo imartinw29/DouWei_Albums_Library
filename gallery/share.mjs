@@ -57,8 +57,8 @@ async function makeAlbumCard(ctx,album){
   }
   ctx.textAlign='center';ctx.fillStyle='#e9e6de';ctx.font='37px "DW Gallery Serif", "Noto Serif CJK SC", serif';ctx.fillText('《'+album.name+'》',450,1019,696);
   ctx.fillStyle='#b4b5ad';ctx.font='21px sans-serif';ctx.fillText(album.date.replaceAll('-','.')+'  /  '+album.group,450,1058,696);
-  ctx.textAlign='left';ctx.font='19px sans-serif';ctx.fillText('imartinw29.github.io/DouWei_Albums_Library/gallery/',103,1102,696);
-  ctx.font='17px sans-serif';ctx.fillText('非官方整理 · 不提供音频或下载',103,1131,696);
+  ctx.textAlign='center';ctx.font='19px sans-serif';ctx.fillText('imartinw29.github.io/DouWei_Albums_Library/gallery/',450,1102,696);
+  ctx.font='17px sans-serif';ctx.fillText('非官方整理 · 不提供音频或下载',450,1131,696);
   return qr;
 }
 async function makeCard(){
@@ -67,6 +67,20 @@ async function makeCard(){
   const ctx=canvas.getContext('2d');
   if(!ctx)throw new Error('Canvas unavailable');
   ctx.fillStyle='#111210';ctx.fillRect(0,0,900,1200);
+  if(!current.album){
+    // Keep the portrait atmospheric; the QR and all text remain fully opaque.
+    try{
+      const portrait=await loadImage(new URL('../photo/douwei-recording.jpg',import.meta.url).href);
+      const scale=Math.max(900/portrait.width,1200/portrait.height);
+      ctx.save();ctx.beginPath();ctx.rect(53,53,794,1094);ctx.clip();
+      ctx.globalAlpha=0.15;ctx.filter='grayscale(1)';
+      ctx.drawImage(portrait,(900-portrait.width*scale)/2,0,portrait.width*scale,portrait.height*scale);
+      ctx.restore();
+      const fade=ctx.createLinearGradient(0,650,0,1148);
+      fade.addColorStop(0,'rgba(17,18,16,0)');fade.addColorStop(1,'#111210');
+      ctx.fillStyle=fade;ctx.fillRect(53,650,794,498);
+    }catch(error){console.warn('[Share] Portrait unavailable; using plain background.',error);}
+  }
   ctx.strokeStyle='#55584e';ctx.lineWidth=2;
   ctx.strokeRect(52,52,796,1096);
   ctx.fillStyle='#aeb1a4';ctx.font='25px Georgia, serif';ctx.fillText('DOU WEI  /  WORKS',102,142);
@@ -74,19 +88,17 @@ async function makeCard(){
     const qr=await makeAlbumCard(ctx,current.album);
     return {blob:await new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('PNG unavailable')),'image/png')),qr:qr.toDataURL('image/png')};
   }
-  const qr=await loadImage(new URL('share-qr.png',import.meta.url).href);
+  const qr=drawQr(SITE,200,'L',4);
   ctx.fillStyle='#e9e6de';ctx.font='55px "DW Gallery Serif", "Noto Serif CJK SC", serif';
   ctx.fillText('山水有声，岁月无言',102,300,696);
   ctx.fillStyle='#b4b5ad';ctx.font='28px sans-serif';
   ctx.fillText('——收录窦唯自1994年以来的作品',103,385,696);
-  ctx.fillStyle='#292c27';ctx.fillRect(102,465,696,1);
-  ctx.fillStyle='#fffdf8';ctx.fillRect(244,528,412,412);
-  ctx.drawImage(qr,252,536,396,396);
-  ctx.fillStyle='#e9e6de';ctx.textAlign='center';ctx.font='26px sans-serif';ctx.fillText('扫码进入作品展',450,946);
-  ctx.fillStyle='#b4b5ad';ctx.font='20px sans-serif';ctx.fillText('imartinw29.github.io',450,1005);
-  ctx.fillText('/DouWei_Albums_Library/gallery/',450,1040);
-  ctx.font='17px sans-serif';ctx.fillText('非官方作品资料整理 · 不提供音频或下载',450,1110);
-  return {blob:await new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('PNG unavailable')),'image/png')),qr:new URL('share-qr.png',import.meta.url).href};
+  // Same compact QR size as album cards, centered above the scan caption.
+  ctx.drawImage(qr,350,830,200,200);
+  ctx.fillStyle='#b4b5ad';ctx.textAlign='center';ctx.font='21px sans-serif';ctx.fillText('扫码进入作品展',450,1058,696);
+  ctx.font='19px sans-serif';ctx.fillText('imartinw29.github.io/DouWei_Albums_Library/gallery/',450,1102,696);
+  ctx.font='17px sans-serif';ctx.fillText('非官方作品资料整理 · 不提供音频或下载',450,1131);
+  return {blob:await new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('PNG unavailable')),'image/png')),qr:qr.toDataURL('image/png')};
 }
 async function openShare(album=null){
   current={url:album?albumUrl(album):SITE,album};
