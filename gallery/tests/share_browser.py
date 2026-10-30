@@ -82,6 +82,7 @@ async def main():
         assert 192<=x2-x1+1<=208,geometry['rect']
         assert 192<=y2-y1+1<=208,geometry['rect']
         assert abs((x1+x2)/2-747)<=2,geometry['rect']
+        assert any(t['text']=='兴来每独往，胜事空自知' and t['x']==102 and t['y']==225 for t in geometry['text'])
         for label in ('《秋兴赋》','2026.10.24  /  朝简'):
             assert any(t['text']==label and t['align']=='center' and t['x']==450 for t in geometry['text']),label
         for label,y in [('imartinw29.github.io/DouWei_Albums_Library/gallery/',1102),('非官方整理 · 不提供音频或下载',1131)]:

@@ -41,7 +41,7 @@ function drawQr(url,size,level='H',border=4){
 }
 async function makeAlbumCard(ctx,album){
   const qr=drawQr(current.url,200,'L',4);
-  ctx.fillStyle='#e9e6de';ctx.font='36px "DW Gallery Serif", "Noto Serif CJK SC", serif';ctx.fillText('山水有声，岁月无言',102,225,380);
+  ctx.fillStyle='#e9e6de';ctx.font='36px "DW Gallery Serif", "Noto Serif CJK SC", serif';ctx.fillText('兴来每独往，胜事空自知',102,225,380);
   ctx.fillStyle='#b4b5ad';ctx.font='18px sans-serif';ctx.fillText('——收录窦唯自1994年以来的作品',103,281,380);
   ctx.drawImage(qr,647,53,200,200);
   ctx.fillStyle='#b4b5ad';ctx.textAlign='center';ctx.font='19px sans-serif';ctx.fillText('扫码查看本专辑',747,288);
@@ -67,6 +67,17 @@ async function makeCard(){
   const ctx=canvas.getContext('2d');
   if(!ctx)throw new Error('Canvas unavailable');
   ctx.fillStyle='#111210';ctx.fillRect(0,0,900,1200);
+  if(current.album){
+    try{
+      const portrait=await loadImage(new URL('../photo/douwei-stage-share.jpg',import.meta.url).href);
+      const height=portrait.height*900/portrait.width;
+      ctx.save();ctx.globalAlpha=0.28;ctx.filter='grayscale(1)';
+      ctx.drawImage(portrait,0,0,900,height);ctx.restore();
+      const fade=ctx.createLinearGradient(0,180,0,820);
+      fade.addColorStop(0,'rgba(17,18,16,0)');fade.addColorStop(1,'#111210');
+      ctx.fillStyle=fade;ctx.fillRect(0,180,900,Math.max(height,820)-180);
+    }catch(error){console.warn('[Share] Album portrait unavailable; using plain background.',error);}
+  }
   if(!current.album){
     // Keep the portrait atmospheric; the QR and all text remain fully opaque.
     try{
